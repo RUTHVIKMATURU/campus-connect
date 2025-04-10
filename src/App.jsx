@@ -12,6 +12,7 @@ import GroupChat from './pages/GroupChat';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import Placement from './pages/Placement';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function App() {
   const [showChat, setShowChat] = useState(false);
@@ -75,14 +76,35 @@ function App() {
           <Bot size={24} />
         </button>
 
-        {/* Floating Chat Window */}
+        <AnimatePresence>
         {showChat && (
-          <div className="fixed bottom-20 right-6 w-80 h-[28rem] bg-white rounded-2xl shadow-2xl z-40 flex flex-col overflow-hidden border border-gray-200">
+          <motion.div
+            key="chatbot"
+            initial={{ opacity: 0, scale: 0.5, y: 50 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.5, y: 50 }}
+            transition={{ duration: 0.3 }}
+            className="fixed bottom-20 right-6 w-[26rem] h-[32rem] bg-white rounded-2xl shadow-2xl z-40 flex flex-col overflow-hidden border border-gray-200"
+          >
+            {/* Close Button */}
+            <div className="flex justify-end items-center p-2 border-b border-gray-200 bg-gray-50">
+              <button
+                onClick={() => setShowChat(false)}
+                className="text-gray-500 hover:text-gray-700 text-sm font-semibold"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Chat Content */}
             <div className="flex-1 overflow-y-auto p-4 scroll-smooth">
               <Chat />
             </div>
-          </div>
+          </motion.div>
         )}
+      </AnimatePresence>
+
+
       </div>
     </Router>
   );

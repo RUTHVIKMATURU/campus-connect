@@ -1,4 +1,4 @@
-const keys = import.meta.env.VITE_GEMINI_API_KEY.split(','); // Split comma-separated keys
+const keys = import.meta.env.VITE_GEMINI_API_KEY.split(',');
 
 let currentKeyIndex = 0;
 
@@ -15,7 +15,7 @@ export async function askGemini(prompt) {
   const key = getNextApiKey();
 
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${key}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,
     {
       method: 'POST',
       headers: {
@@ -32,6 +32,6 @@ export async function askGemini(prompt) {
   if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
     return data.candidates[0].content.parts[0].text;
   } else {
-    return 'Sorry, I couldn’t understand that. 🤖';
+    return 'Sorry, I couldn’t understand that.';
   }
 }

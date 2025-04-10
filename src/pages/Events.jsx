@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import EventCard from '../components/EventCard';
 import axios from 'axios';
-
+import { motion } from 'framer-motion';
 export default function Events() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,18 +35,24 @@ export default function Events() {
       ) : (
         <div className="flex flex-wrap justify-center gap-8">
           {events.map((event, index) => (
-            <EventCard
+            <motion.div
               key={index}
-              title={event.title}
-              date={new Date(event.date).toLocaleDateString(undefined, {
-                weekday: 'short',
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-              })}
-              location={event.location}
-              description={event.description}
-            />
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <EventCard
+                title={event.title}
+                date={new Date(event.date).toLocaleDateString(undefined, {
+                  weekday: 'short',
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })}
+                location={event.location}
+                description={event.description}
+              />
+            </motion.div>
           ))}
         </div>
       )}

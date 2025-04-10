@@ -1,21 +1,27 @@
-import { CalendarClock, MapPin } from 'lucide-react';
-
 export default function EventCard({ title, date, location, description }) {
   return (
-    <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition duration-300 p-6 space-y-3 w-full max-w-md">
-      <h2 className="text-xl font-bold text-sky-800">{title}</h2>
-      <div className="flex items-center text-sm text-gray-600 gap-2">
-        <CalendarClock size={16} className="text-sky-500" />
+    <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 p-6 space-y-4 w-full max-w-md border border-gray-100 hover:border-sky-300">
+      {/* Title */}
+      <h2 className="text-2xl font-extrabold text-sky-800 tracking-tight">
+        {title}
+      </h2>
+
+      {/* Date */}
+      <div className="flex items-start text-sm text-gray-700">
+        <span className="font-semibold text-sky-600 mr-2">Date:</span>
         <span>{date}</span>
       </div>
-      <div className="flex items-center text-sm text-gray-600 gap-2">
-        <MapPin size={16} className="text-pink-500" />
+
+      {/* Location */}
+      <div className="flex items-start text-sm text-gray-700">
+        <span className="font-semibold text-pink-600 mr-2">Location:</span>
         <span>{location}</span>
       </div>
-      <p className="text-gray-700 text-sm">{description}</p>
-      <button className="mt-2 px-4 py-1 text-sm rounded-lg bg-sky-600 text-white hover:bg-sky-700 transition">
-        Register
-      </button>
+
+      {/* Description */}
+      <p className="text-gray-600 text-sm leading-relaxed">
+        {description}
+      </p>
     </div>
   );
 }

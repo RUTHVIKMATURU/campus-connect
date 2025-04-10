@@ -3,7 +3,7 @@ import { SendHorizonal } from 'lucide-react';
 import { askGemini } from '../gemini';
 
 export default function Chat() {
-  const [messages, setMessages] = useState([{ text: 'Hi there! 👋', sender: 'bot' }]);
+  const [messages, setMessages] = useState([{ text: 'Hi, How can i help you', sender: 'bot' }]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
@@ -35,7 +35,7 @@ export default function Chat() {
   return (
     <div className="bg-white shadow-xl rounded-2xl w-full h-full flex flex-col">
       <div className="bg-sky-700 text-white text-lg font-semibold py-3 px-5 rounded-t-2xl">
-        💬 Chat with Gemini
+        💬 Chat with Arya
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -58,7 +58,7 @@ export default function Chat() {
         {loading && (
           <div className="flex justify-start">
             <div className="px-4 py-2 bg-gray-200 text-gray-500 rounded-lg max-w-xs rounded-bl-none animate-pulse">
-              Gemini is typing...
+              Arya is typing...
             </div>
           </div>
         )}

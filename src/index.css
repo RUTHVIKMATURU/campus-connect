@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Add to your global CSS */
+.glow-text {
+  text-shadow: 0 0 10px #ffffffaa, 0 0 20px #ffffff88;
+}
+
+/* Optional: You can also add this directly in Tailwind via plugin/custom class */
