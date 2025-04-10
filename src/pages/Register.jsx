@@ -1,8 +1,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-
+import { useNavigate,Link } from 'react-router-dom'; // Import useNavigate
 function Register() {
   const {
     register,
@@ -129,6 +128,13 @@ function Register() {
         >
           Register
         </button>
+        <Link
+          to="/admin-login"
+          className="block text-center text-cyan-700 hover:text-cyan-900 font-medium transition-colors duration-200"
+        >
+          Admin Login
+        </Link>
+
       </form>
     </div>
   );

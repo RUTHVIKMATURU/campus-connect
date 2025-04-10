@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Link } from 'react-router-dom';
 import axios from 'axios';
 
 export default function Login({ onLogin }) {
@@ -73,6 +73,11 @@ export default function Login({ onLogin }) {
         >
           {loading ? 'Logging in...' : 'Login'}
         </button>
+        <div className="text-center text-sm text-sky-600 mt-2">
+          <Link to="/admin-login" className="hover:underline hover:text-sky-800 transition">
+            Admin Login
+          </Link>
+        </div>
       </form>
     </div>
   );

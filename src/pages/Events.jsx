@@ -1,43 +1,55 @@
+import { useEffect, useState } from 'react';
 import EventCard from '../components/EventCard';
+import axios from 'axios';
 
 export default function Events() {
-  const events = [
-    {
-      title: 'Hackathon 2025',
-      date: 'April 15, 2025',
-      location: 'Tech Park Auditorium',
-      description: 'Join the most exciting 24-hour coding challenge of the year!',
-    },
-    {
-      title: 'Career Expo',
-      date: 'April 22, 2025',
-      location: 'Main Campus Hall B',
-      description: 'Meet top companies and explore internship and job opportunities.',
-    },
-    {
-      title: 'AI Workshop',
-      date: 'May 3, 2025',
-      location: 'Room 204, Innovation Block',
-      description: 'Hands-on session on building smart applications using AI tools.',
-    },
-  ];
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    axios.get('http://localhost:5000/api/events')
+      .then((res) => {
+        setEvents(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Error fetching events:', err);
+        setError('Failed to load events. Please try again later.');
+        setLoading(false);
+      });
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-tr from-white via-blue-50 to-pink-50 py-12 px-6">
       <h1 className="text-4xl font-bold text-center text-sky-800 mb-10">
         Upcoming Events 🎉
       </h1>
-      <div className="flex flex-wrap justify-center gap-8">
-        {events.map((event, index) => (
-          <EventCard
-            key={index}
-            title={event.title}
-            date={event.date}
-            location={event.location}
-            description={event.description}
-          />
-        ))}
-      </div>
+
+      {loading ? (
+        <p className="text-center text-gray-600">Loading events...</p>
+      ) : error ? (
+        <p className="text-center text-red-500">{error}</p>
+      ) : events.length === 0 ? (
+        <p className="text-center text-gray-500">No upcoming events</p>
+      ) : (
+        <div className="flex flex-wrap justify-center gap-8">
+          {events.map((event, index) => (
+            <EventCard
+              key={index}
+              title={event.title}
+              date={new Date(event.date).toLocaleDateString(undefined, {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })}
+              location={event.location}
+              description={event.description}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

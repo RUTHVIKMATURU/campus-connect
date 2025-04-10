@@ -47,6 +47,13 @@ export default function Navbar({ isLoggedIn, onLogout }) {
           >
             Events
           </Link>
+          <Link
+            to="/placements"
+            className="hover:text-white hover:scale-110 transition-transform duration-300"
+            title="Events"
+          >
+            Placements
+          </Link>
 
           <Link
             to="/experience"
