@@ -24,12 +24,8 @@ function Register() {
         branch: data.branch,
         password: data.password,
       });
-
-      alert('Registered successfully!');
       console.log(res.data.message);
-
-      // Navigate to login page after successful registration
-      navigate('/login');  // Redirect to the login page
+      navigate('/login');
     } catch (err) {
       const errorMsg =
         err.response?.data?.error || err.message || 'Failed to register';

@@ -1,10 +1,25 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 export default function Navbar({ isLoggedIn, onLogout }) {
   const navigate = useNavigate();
+  
+  // State to track the logged-in user from localStorage
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
+
+  // Retrieve the isAdmin status from localStorage
+  const isAdmin = JSON.parse(localStorage.getItem('isAdmin'));
+
+  useEffect(() => {
+    // Update the user state whenever the login status changes
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    setUser(storedUser);
+  }, [isLoggedIn]);
 
   const handleLogout = () => {
     onLogout();
+    localStorage.removeItem('user');
+    localStorage.removeItem('isAdmin'); // Optionally remove isAdmin
     navigate('/');
   };
 
@@ -56,6 +71,17 @@ export default function Navbar({ isLoggedIn, onLogout }) {
             Group Chat
           </Link>
 
+          {/* Conditionally render Admin Dashboard if user is logged in and isAdmin is true */}
+          {isAdmin && (
+            <Link
+              to="/admin-dashboard"
+              className="hover:text-purple-300 hover:scale-110 transition-all duration-300 ease-in-out hover:drop-shadow-[0_0_10px_rgba(128,0,128,0.6)]"
+            >
+              Admin Dashboard
+            </Link>
+          )}
+
+          {/* Show Login/Register links if not logged in */}
           {!isLoggedIn ? (
             <>
               <Link

@@ -24,8 +24,6 @@ export default function Login({ onLogin }) {
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       onLogin(user);
-
-      alert('Login successful!');
       navigate('/');
     } catch (err) {
       const errorMsg =
