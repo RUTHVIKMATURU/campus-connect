@@ -25,39 +25,36 @@ function Placement() {
     return <div className="text-center text-lg mt-8 text-blue-700 font-medium">Loading placements...</div>;
 
   return (
-    <div className="p-6 md:p-10 bg-gradient-to-br from-blue-50 to-pink-50 min-h-screen">
-      <h2 className="text-4xl font-extrabold text-center text-sky-800 mb-12 drop-shadow">
-        Recent & Upcoming Placements
-      </h2>
+    <div className="min-h-screen bg-gradient-to-br from-secondary-50 via-white to-primary-50 py-12 px-6">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-4xl font-bold text-center bg-gradient-to-r from-secondary-600 to-primary-600 bg-clip-text text-transparent mb-12">
+          Placement Opportunities
+        </h1>
 
-      {placements.length === 0 ? (
-        <p className="text-center text-gray-600 text-lg">No placements found.</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-          {placements.map((p, index) => (
-            <motion.div
-              key={p._id}
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.15 }}
-              className="bg-white rounded-3xl shadow-xl p-6 border-b-4 border-sky-500 hover:border-pink-400 hover:shadow-2xl transform transition duration-300 hover:scale-105"
-            >
-              <h3 className="text-2xl font-bold text-sky-700 mb-2">{p.name}</h3>
-              
-              <p className="text-gray-700 mb-1"><span className="font-semibold text-sky-600">Company:</span> {p.company}</p>
-              <p className="text-gray-700 mb-1"><span className="font-semibold text-sky-600">Branch:</span> {p.branch}</p>
-              <p className="text-gray-700 mb-1"><span className="font-semibold text-sky-600">Package:</span> {p.package}</p>
-              <p className="text-gray-500 text-sm mt-3 italic">
-                {new Date(p.date).toLocaleDateString(undefined, {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric',
-                })}
-              </p>
-            </motion.div>
+        <div className="grid md:grid-cols-2 gap-8">
+          {placements.map((placement) => (
+            <div key={placement.id} className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 animate-fade-in">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-800">{placement.company}</h3>
+                  <p className="text-primary-600 font-medium">{placement.role}</p>
+                </div>
+                <span className="px-4 py-1 bg-secondary-100 text-secondary-700 rounded-full text-sm font-medium">
+                  {placement.type}
+                </span>
+              </div>
+              <div className="space-y-3 text-gray-600">
+                <p>💰 Package: {placement.package}</p>
+                <p>📍 Location: {placement.location}</p>
+                <p>📅 Last Date: {placement.lastDate}</p>
+              </div>
+              <button className="mt-6 w-full py-3 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                Apply Now
+              </button>
+            </div>
           ))}
         </div>
-      )}
+      </div>
     </div>
   );
 }

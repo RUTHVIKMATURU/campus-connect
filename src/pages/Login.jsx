@@ -35,48 +35,70 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-cyan-100 px-4">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md space-y-6"
-      >
-        <h2 className="text-2xl font-bold text-center text-cyan-700">Student Login</h2>
-
-        <div>
-          <label className="block mb-1 font-medium text-cyan-800">Registration Number</label>
-          <input
-            type="text"
-            value={regNo}
-            onChange={(e) => setRegNo(e.target.value)}
-            className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-            placeholder="eg: 2X071AXXXX"
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1 font-medium text-cyan-800">Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-            placeholder="Enter your password"
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className={`w-full text-white py-2 rounded-lg font-medium transition ${loading ? 'bg-cyan-400' : 'bg-cyan-600 hover:bg-cyan-700'}`}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50 px-4">
+      <div className="w-full max-w-md">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white p-8 rounded-2xl shadow-2xl space-y-6 border border-gray-100 animate-fade-in"
         >
-          {loading ? 'Logging in...' : 'Login'}
-        </button>
-        <div className="text-center text-sm text-sky-600 mt-2">
-          <Link to="/admin-login" className="hover:underline hover:text-sky-800 transition">
-            Admin Login
-          </Link>
-        </div>
-      </form>
+          <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-8">
+            Welcome Back
+          </h2>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Registration Number</label>
+              <input
+                type="text"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all duration-300"
+                placeholder="Enter your reg number"
+                value={regNo}
+                onChange={(e) => setRegNo(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">Password</label>
+              <input
+                type="password"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all duration-300"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {error && (
+            <p className="text-red-500 text-sm text-center">{error}</p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl font-medium transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Signing in...' : 'Sign In'}
+          </button>
+
+          <div className="text-center space-y-2">
+            <Link 
+              to="/register" 
+              className="text-primary-600 hover:text-primary-800 font-medium transition-colors duration-300"
+            >
+              Create an account
+            </Link>
+            <div className="border-t border-gray-200 pt-4">
+              <Link 
+                to="/admin-login" 
+                className="text-secondary-600 hover:text-secondary-800 font-medium transition-colors duration-300"
+              >
+                Admin Login
+              </Link>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

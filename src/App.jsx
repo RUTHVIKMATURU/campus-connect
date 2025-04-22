@@ -12,6 +12,8 @@ import GroupChat from './pages/GroupChat';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import Placement from './pages/Placement';
+import Seniors from './pages/Seniors';
+import PersonalChat from './pages/PersonalChat';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function App() {
@@ -64,6 +66,8 @@ function App() {
               path="/admin-dashboard"
               element={isAdmin ? <AdminDashboard /> : <AdminLogin setIsAdmin={setIsAdmin} />}
             />
+            <Route path="/seniors" element={<Seniors />} />
+            <Route path="/personal-chat/:seniorId" element={<PersonalChat />} />
           </Routes>
         </main>
 
@@ -111,3 +115,5 @@ function App() {
 }
 
 export default App;
+
+

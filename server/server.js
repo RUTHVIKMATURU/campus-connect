@@ -4,9 +4,8 @@ const cors = require('cors');
 require('dotenv').config();
 
 const authRoutes = require('./routes/Auth');
-const eventRoutes = require('./routes/Event');
-const placementRoutes = require('./routes/Placement'); 
-const experienceRoutes = require('./routes/Experience'); 
+const studentRoutes = require('./routes/Student');
+const chatRoutes = require('./routes/Chat');
 
 const app = express();
 app.use(cors());
@@ -14,9 +13,8 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/events', eventRoutes);
-app.use('/api/placements', placementRoutes);
-app.use('/api/experiences', experienceRoutes); 
+app.use('/api/students', studentRoutes);
+app.use('/api/chat', chatRoutes);
 
 // MongoDB Connection
 mongoose
