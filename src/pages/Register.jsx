@@ -1,139 +1,273 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useState } from 'react';
 import axios from 'axios';
-import { useNavigate,Link } from 'react-router-dom'; // Import useNavigate
-function Register() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+import { useNavigate, Link } from 'react-router-dom';
 
-  const navigate = useNavigate(); // Initialize navigate
+export default function Register() {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    regNo: '',
+    name: '',
+    email: '',
+    password: '',
+    branch: '',
+    year: '',
+    section: '',
+    status: 'pursuing',
+    batch: '',
+    role: 'student',
+    company: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const onSubmit = async (data) => {
-    if (data.password !== data.confirmPass) {
-      alert('Passwords do not match.');
-      return;
-    }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', {
-        regNo: data.regNo,
-        year: data.year,
-        branch: data.branch,
-        password: data.password,
-      });
-      console.log(res.data.message);
-      navigate('/login');
-    } catch (err) {
-      const errorMsg =
-        err.response?.data?.error || err.message || 'Failed to register';
-      alert(errorMsg);
+      const response = await axios.post('http://localhost:5000/api/auth/register', formData);
+      
+      // Store token and user data
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      
+      navigate('/');
+    } catch (error) {
+      setError(error.response?.data?.error || 'Registration failed');
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-100 px-4 text-gray-800">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md space-y-6 border border-gray-200"
-      >
-        <h2 className="text-2xl font-bold text-center text-cyan-700">Register</h2>
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-8">
+        <h2 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+          Create Account
+        </h2>
 
-        {errors.root && <p className="text-red-600 text-sm text-center">{errors.root.message}</p>}
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+            {error}
+          </div>
+        )}
 
-        <div>
-          <label className="block mb-1 font-medium">Registration Number</label>
-          <input
-            type="text"
-            {...register('regNo', { required: 'Registration number is required' })}
-            className="w-full border rounded-lg px-4 py-2"
-            placeholder="eg: 2X071AXXXX"
-          />
-          {errors.regNo && <p className="text-red-600 text-sm">{errors.regNo.message}</p>}
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">
+              Registration Number
+            </label>
+            <input
+              type="text"
+              name="regNo"
+              required
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+              value={formData.regNo}
+              onChange={handleChange}
+              disabled={loading}
+            />
+          </div>
 
-        <div>
-          <label className="block mb-1 font-medium">Year</label>
-          <select
-            {...register('year', { required: 'Year is required' })}
-            className="w-full border rounded-lg px-4 py-2 bg-white"
-          >
-            <option value="">Select Year</option>
-            <option value="1st">1st</option>
-            <option value="2nd">2nd</option>
-            <option value="3rd">3rd</option>
-            <option value="4th">4th</option>
-          </select>
-          {errors.year && <p className="text-red-600 text-sm">{errors.year.message}</p>}
-        </div>
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">
+              Full Name
+            </label>
+            <input
+              type="text"
+              name="name"
+              required
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+              value={formData.name}
+              onChange={handleChange}
+              disabled={loading}
+            />
+          </div>
 
-        <div>
-          <label className="block mb-1 font-medium">Branch</label>
-          <select
-            {...register('branch', { required: 'Branch is required' })}
-            className="w-full border rounded-lg px-4 py-2 bg-white"
-          >
-            <option value="">Select Branch</option>
-            <option value="CSE">CSE</option>
-            <option value="CSE-AIML">CSE-AIML</option>
-            <option value="CSE-DS">CSE-DS</option>
-            <option value="CSBS">CSBS</option>
-            <option value="AIDS">AIDS</option>
-            <option value="CSE-IOT">CSE-IOT</option>
-            <option value="CSE-CYS">CSE-CYS</option>
-            <option value="EIE">EIE</option>
-            <option value="AME">AME</option>
-            <option value="ECE">ECE</option>
-            <option value="EEE">EEE</option>
-            <option value="MECH">MECH</option>
-            <option value="CIVIL">CIVIL</option>
-            <option value="IT">IT</option>
-          </select>
-          {errors.branch && <p className="text-red-600 text-sm">{errors.branch.message}</p>}
-        </div>
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              required
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+              value={formData.email}
+              onChange={handleChange}
+              disabled={loading}
+            />
+          </div>
 
-        <div>
-          <label className="block mb-1 font-medium">Password</label>
-          <input
-            type="password"
-            {...register('password', { required: 'Password is required' })}
-            className="w-full border rounded-lg px-4 py-2"
-            placeholder="Enter password"
-          />
-          {errors.password && <p className="text-red-600 text-sm">{errors.password.message}</p>}
-        </div>
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">
+              Password
+            </label>
+            <input
+              type="password"
+              name="password"
+              required
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+              value={formData.password}
+              onChange={handleChange}
+              disabled={loading}
+            />
+          </div>
 
-        <div>
-          <label className="block mb-1 font-medium">Confirm Password</label>
-          <input
-            type="password"
-            {...register('confirmPass', { required: 'Confirm your password' })}
-            className="w-full border rounded-lg px-4 py-2"
-            placeholder="Confirm password"
-          />
-          {errors.confirmPass && (
-            <p className="text-red-600 text-sm">{errors.confirmPass.message}</p>
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">
+              Year
+            </label>
+            <select
+              name="year"
+              required
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+              value={formData.year}
+              onChange={handleChange}
+              disabled={loading}
+            >
+              <option value="">Select Year</option>
+              <option value="1st">1st Year</option>
+              <option value="2nd">2nd Year</option>
+              <option value="3rd">3rd Year</option>
+              <option value="4th">4th Year</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">
+              Branch
+            </label>
+            <select
+              name="branch"
+              required
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+              value={formData.branch}
+              onChange={handleChange}
+              disabled={loading}
+            >
+              <option value="">Select Branch</option>
+              <option value="CSE">CSE</option>
+              <option value="CSE-AIML">CSE-AIML</option>
+              <option value="CSE-DS">CSE-DS</option>
+              <option value="CSBS">CSBS</option>
+              <option value="AIDS">AIDS</option>
+              <option value="CSE-IOT">CSE-IOT</option>
+              <option value="CSE-CYS">CSE-CYS</option>
+              <option value="EIE">EIE</option>
+              <option value="AME">AME</option>
+              <option value="ECE">ECE</option>
+              <option value="EEE">EEE</option>
+              <option value="MECH">MECH</option>
+              <option value="CIVIL">CIVIL</option>
+              <option value="IT">IT</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">
+              Section
+            </label>
+            <select
+              name="section"
+              required
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+              value={formData.section}
+              onChange={handleChange}
+              disabled={loading}
+            >
+              <option value="">Select Section</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">
+              Batch
+            </label>
+            <select
+              name="batch"
+              required
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+              value={formData.batch}
+              onChange={handleChange}
+              disabled={loading}
+            >
+              <option value="">Select Batch</option>
+              <option value="2020-2024">2020-2024</option>
+              <option value="2021-2025">2021-2025</option>
+              <option value="2022-2026">2022-2026</option>
+              <option value="2023-2027">2023-2027</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">
+              Role
+            </label>
+            <select
+              name="role"
+              required
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+              value={formData.role}
+              onChange={handleChange}
+              disabled={loading}
+            >
+              <option value="student">Student</option>
+              <option value="senior">Senior</option>
+            </select>
+          </div>
+
+          {/* Add company field that shows only when role is senior */}
+          {formData.role === 'senior' && (
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                Company
+              </label>
+              <input
+                type="text"
+                name="company"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+                value={formData.company || ''}
+                onChange={handleChange}
+                disabled={loading}
+                placeholder="Enter your company name"
+              />
+            </div>
           )}
-        </div>
 
-        <button
-          type="submit"
-          className="w-full bg-cyan-600 hover:bg-cyan-700 text-white py-2 rounded-lg font-medium"
-        >
-          Register
-        </button>
-        <Link
-          to="/admin-login"
-          className="block text-center text-cyan-700 hover:text-cyan-900 font-medium transition-colors duration-200"
-        >
-          Admin Login
-        </Link>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 disabled:opacity-50"
+          >
+            {loading ? 'Creating Account...' : 'Create Account'}
+          </button>
 
-      </form>
+          <div className="text-center mt-4">
+            <p className="text-gray-600">
+              Already have an account?{' '}
+              <Link 
+                to="/login" 
+                className="text-primary-600 hover:text-primary-800 font-medium transition-colors duration-300"
+              >
+                Sign In
+              </Link>
+            </p>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
-
-export default Register;

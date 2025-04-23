@@ -12,9 +12,12 @@
   "dependencies": {
     "@google/generative-ai": "^0.24.0",
     "axios": "^1.8.4",
+    "date-fns": "^4.1.0",
+    "dotenv": "^16.5.0",
     "firebase": "^11.6.0",
     "framer-motion": "^12.6.3",
     "lucide-react": "^0.487.0",
+    "mongoose": "^8.13.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.55.0",

@@ -1,50 +1,126 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const Student = require('../models/Student');
 
 const router = express.Router();
 
-// Register
-router.post('/register', async (req, res) => {
-  const { regNo, year, branch, section, password } = req.body;
-
-  try {
-    const existing = await User.findOne({ regNo });
-    if (existing) return res.status(400).json({ error: 'User already exists' });
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = new User({ regNo, year, branch, section, password: hashedPassword });
-    await newUser.save();
-
-    res.status(201).json({ message: 'User registered successfully' });
-  } catch (err) {
-    res.status(500).json({ error: 'Registration failed' });
-  }
-});
-
-// Login
-// Login
+// Login route
 router.post('/login', async (req, res) => {
-  const { regNo, password } = req.body;
-
   try {
-    const user = await User.findOne({ regNo });
-    if (!user) return res.status(400).json({ error: 'Invalid credentials' });
+    const { regNo, password } = req.body;
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(400).json({ error: 'Invalid credentials' });
+    // Validate input
+    if (!regNo || !password) {
+      return res.status(400).json({ 
+        error: 'Please provide both registration number and password'
+      });
+    }
 
-    // Generate JWT token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+    // Find student
+    const student = await Student.findOne({ regNo });
+    if (!student) {
+      return res.status(401).json({ 
+        error: 'Invalid credentials'
+      });
+    }
 
-    // Send user data along with the token
-    res.json({ message: 'Login successful', token, user: { regNo: user.regNo, year: user.year, branch: user.branch, section: user.section } });
-  } catch (err) {
-    res.status(500).json({ error: 'Login failed' });
+    // Verify password
+    const isValidPassword = await bcrypt.compare(password, student.password);
+    if (!isValidPassword) {
+      return res.status(401).json({ 
+        error: 'Invalid credentials'
+      });
+    }
+
+    // Generate token
+    const token = jwt.sign(
+      { id: student._id, regNo: student.regNo },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    // Send response
+    res.json({
+      token,
+      user: {
+        regNo: student.regNo,
+        name: student.name,
+        email: student.email,
+        year: student.year,
+        branch: student.branch,
+        section: student.section,
+        role: student.role
+      }
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ 
+      error: 'Login failed',
+      details: error.message 
+    });
   }
 });
 
+// Register route
+router.post('/register', async (req, res) => {
+  try {
+    const { regNo, name, email, password, year, branch, section,role } = req.body;
+
+    // Check if student already exists
+    const existingStudent = await Student.findOne({ 
+      $or: [{ regNo }, { email }] 
+    });
+
+    if (existingStudent) {
+      return res.status(400).json({ 
+        error: 'Registration number or email already exists' 
+      });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Create new student
+    const student = new Student({
+      regNo,
+      name,
+      email,
+      password: hashedPassword,
+      year,
+      branch,
+      section,
+      role
+    });
+
+    await student.save();
+
+    // Generate token
+    const token = jwt.sign(
+      { id: student._id, regNo: student.regNo },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.status(201).json({
+      token,
+      user: {
+        regNo: student.regNo,
+        name: student.name,
+        email: student.email,
+        year: student.year,
+        branch: student.branch,
+        section: student.section,
+        role: student.role
+      }
+    });
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ 
+      error: 'Registration failed',
+      details: error.message 
+    });
+  }
+});
 
 module.exports = router;

@@ -1,17 +1,62 @@
 const mongoose = require('mongoose');
 
 const studentSchema = new mongoose.Schema({
-  regNo: { type: String, required: true, unique: true },
-  name: { type: String, required: true },
-  email: { type: String, required: true },
-  year: { type: String, required: true },
-  branch: { type: String, required: true },
-  role: { type: String, enum: ['senior', 'junior'], required: true },
-  status: { type: String, enum: ['placed', 'pursuing'], default: 'pursuing' },
-  company: String,
-  position: String,
+  regNo: {
+    type: String,
+    required: [true, 'Registration number is required'],
+    unique: true,
+    trim: true
+  },
+  name: {
+    type: String,
+    required: [true, 'Name is required'],
+    trim: true
+  },
+  email: {
+    type: String,
+    required: [true, 'Email is required'],
+    unique: true,
+    trim: true,
+    lowercase: true
+  },
+  password: {
+    type: String,
+    required: [true, 'Password is required']
+  },
+  branch: {
+    type: String,
+    required: [true, 'Branch is required']
+  },
+  year: {
+    type: String,
+    required: [true, 'Year is required']
+  },
+  section: {
+    type: String,
+    required: [true, 'Section is required']
+  },
+  role: {
+    type: String,
+    enum: ['student', 'senior'],
+    default: 'student'
+  },
+  status: {
+    type: String,
+    default: 'pursuing'
+  },
   batch: String,
-  createdAt: { type: Date, default: Date.now }
+  company: String
+}, {
+  timestamps: true
 });
 
 module.exports = mongoose.model('Student', studentSchema);
+
+
+
+
+
+
+
+
+

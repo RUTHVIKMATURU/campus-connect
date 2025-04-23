@@ -28,7 +28,7 @@ function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="flex gap-4 justify-center"
+          className="flex justify-center"
         >
           <Link
             to="/seniors"
@@ -36,12 +36,6 @@ function Home() {
           >
             <Users size={20} />
             Connect with Seniors
-          </Link>
-          <Link
-            to="/events"
-            className="px-8 py-3 bg-white text-blue-600 rounded-lg border-2 border-blue-600 hover:bg-blue-50 transition-all duration-300"
-          >
-            Explore Events
           </Link>
         </motion.div>
       </div>
