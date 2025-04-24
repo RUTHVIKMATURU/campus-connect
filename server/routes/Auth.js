@@ -40,10 +40,11 @@ router.post('/login', async (req, res) => {
       { expiresIn: '24h' }
     );
 
-    // Send response
+    // Send response with _id included
     res.json({
       token,
       user: {
+        _id: student._id, // Make sure to include the _id
         regNo: student.regNo,
         name: student.name,
         email: student.email,

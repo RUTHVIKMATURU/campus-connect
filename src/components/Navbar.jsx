@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { MessageSquare, LogIn, UserPlus, Shield } from 'lucide-react';
+import { MessageSquare, LogIn, UserPlus, Shield, User } from 'lucide-react';
 
 export default function Navbar({ isLoggedIn, isAdmin, onLogout }) {
   const user = JSON.parse(localStorage.getItem('user') || 'null');
@@ -26,13 +26,21 @@ export default function Navbar({ isLoggedIn, isAdmin, onLogout }) {
               </Link>
               
               {user.role === 'senior' ? (
-                <Link 
-                  to="/senior-messages" 
-                  className="flex items-center space-x-2 text-white hover:text-primary-200"
-                >
-                  <MessageSquare size={20} />
-                  <span>Messages from Juniors</span>
-                </Link>
+                <>
+                  <Link 
+                    to="/senior-messages" 
+                    className="flex items-center space-x-2 text-white hover:text-primary-200"
+                  >
+                    <MessageSquare size={20} />
+                    <span>Messages from Juniors</span>
+                  </Link>
+                  <Link 
+                    to="/experiences" 
+                    className="text-white hover:text-primary-200"
+                  >
+                    Experiences
+                  </Link>
+                </>
               ) : (
                 <>
                   <Link to="/seniors" className="text-white hover:text-primary-200">
@@ -46,6 +54,14 @@ export default function Navbar({ isLoggedIn, isAdmin, onLogout }) {
               
               <Link to="/group-chat" className="text-white hover:text-primary-200">
                 Group Chat
+              </Link>
+
+              <Link 
+                to="/profile" 
+                className="flex items-center space-x-2 text-white hover:text-primary-200"
+              >
+                <User size={20} />
+                <span>{user.regNo}</span>
               </Link>
               
               <button
@@ -79,15 +95,7 @@ export default function Navbar({ isLoggedIn, isAdmin, onLogout }) {
                 className="flex items-center space-x-2 text-white hover:text-primary-200"
               >
                 <UserPlus size={20} />
-                <span>Sign Up</span>
-              </Link>
-              
-              <Link 
-                to="/admin-login" 
-                className="flex items-center space-x-2 text-white hover:text-primary-200"
-              >
-                <Shield size={20} />
-                <span>Admin</span>
+                <span>Register</span>
               </Link>
             </div>
           )}

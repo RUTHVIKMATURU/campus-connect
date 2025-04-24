@@ -4,6 +4,45 @@ import { Users, MessageSquare, Briefcase, GraduationCap, Building2, ArrowRight }
 import { motion } from 'framer-motion';
 
 function Home() {
+  // Get user from localStorage
+  const user = JSON.parse(localStorage.getItem('user'));
+
+  const renderActionButton = () => {
+    if (!user) {
+      return (
+        <Link
+          to="/login"
+          className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 flex items-center gap-2"
+        >
+          <Users size={20} />
+          Login to Connect
+        </Link>
+      );
+    }
+
+    if (user.role === 'senior') {
+      return (
+        <Link
+          to="/senior-messages"
+          className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 flex items-center gap-2"
+        >
+          <MessageSquare size={20} />
+          View Messages
+        </Link>
+      );
+    }
+
+    return (
+      <Link
+        to="/seniors"
+        className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 flex items-center gap-2"
+      >
+        <Users size={20} />
+        Connect with Seniors
+      </Link>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -30,13 +69,7 @@ function Home() {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="flex justify-center"
         >
-          <Link
-            to="/seniors"
-            className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 flex items-center gap-2"
-          >
-            <Users size={20} />
-            Connect with Seniors
-          </Link>
+          {renderActionButton()}
         </motion.div>
       </div>
 
@@ -109,13 +142,7 @@ function Home() {
 
           {/* CTA */}
           <div className="text-center mt-12">
-            <Link
-              to="/seniors"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 text-lg font-semibold"
-            >
-              Start Connecting Now
-              <ArrowRight size={20} />
-            </Link>
+            {renderActionButton()}
           </div>
         </div>
       </div>

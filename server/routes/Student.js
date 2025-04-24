@@ -239,7 +239,72 @@ router.get('/reg/:identifier', async (req, res) => {
   }
 });
 
+// Update profile
+router.put('/profile/:id', async (req, res) => {
+  try {
+    const studentId = req.params.id;
+
+    // Better ID validation with specific error message
+    if (!studentId || !mongoose.Types.ObjectId.isValid(studentId)) {
+      return res.status(400).json({
+        message: `Invalid student ID format: ${studentId}`
+      });
+    }
+
+    const updateData = req.body;
+
+    // Remove sensitive fields from update data
+    const sanitizedData = { ...updateData };
+    delete sanitizedData.password;
+    delete sanitizedData._id;
+    delete sanitizedData.role;
+
+    // Check if email is being updated
+    if (sanitizedData.email) {
+      const existingStudent = await Student.findOne({
+        _id: { $ne: studentId },
+        email: sanitizedData.email
+      });
+
+      if (existingStudent) {
+        return res.status(400).json({
+          message: 'Email already exists'
+        });
+      }
+    }
+
+    const updatedStudent = await Student.findByIdAndUpdate(
+      studentId,
+      { $set: sanitizedData },
+      { 
+        new: true, 
+        runValidators: true,
+        select: '-password'
+      }
+    );
+
+    if (!updatedStudent) {
+      return res.status(404).json({ 
+        message: 'Student not found' 
+      });
+    }
+
+    res.json({
+      message: 'Profile updated successfully',
+      student: updatedStudent
+    });
+  } catch (error) {
+    console.error('Profile update error:', error);
+    res.status(400).json({ 
+      message: error.message || 'Error updating profile'
+    });
+  }
+});
+
 module.exports = router;
+
+
+
 
 
 

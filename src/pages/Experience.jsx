@@ -169,6 +169,7 @@ export default function Experience() {
               transition={{ duration: 0.3 }}
             >
               <ExperiencePost
+                id={experience._id}
                 role={experience.role}
                 company={experience.company}
                 date={experience.duration}

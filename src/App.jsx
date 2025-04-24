@@ -13,6 +13,8 @@ import Seniors from './pages/Seniors';
 import PersonalChat from './pages/PersonalChat';
 import SeniorMessages from './pages/SeniorMessages';
 import Experience from './pages/Experience';
+import ExperienceDetail from './pages/ExperienceDetail';
+import Profile from './pages/Profile';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function App() {
@@ -21,11 +23,23 @@ function App() {
   const [showChat, setShowChat] = useState(false);
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
     const isAdminStored = localStorage.getItem('isAdmin');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+
+    if (token && storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        if (parsedUser && parsedUser._id) {
+          setUser(parsedUser);
+        }
+      } catch (err) {
+        console.error('Error parsing user data:', err);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
     }
+
     if (isAdminStored === 'true') {
       setIsAdmin(true);
     }
@@ -33,6 +47,7 @@ function App() {
 
   const handleLogin = (userData) => {
     setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
   };
 
   const handleLogout = () => {
@@ -61,6 +76,7 @@ function App() {
             <Route path="/chat" element={<Chat />} />
             <Route path="/seniors" element={<Seniors />} />
             <Route path="/experiences" element={<Experience />} />
+            <Route path="/experiences/:id" element={<ExperienceDetail />} />
             <Route path="/personal-chat/:seniorId" element={<PersonalChat />} />
             <Route path="/group-chat" element={<GroupChat user={user} />} />
             <Route path="/admin-login" element={<AdminLogin setIsAdmin={setIsAdmin} />} />
@@ -75,6 +91,12 @@ function App() {
                   <Navigate to="/" replace />
                 )
               } 
+            />
+            <Route
+              path="/profile"
+              element={
+                user ? <Profile /> : <Navigate to="/login" replace />
+              }
             />
           </Routes>
         </main>
@@ -118,6 +140,10 @@ function App() {
 }
 
 export default App;
+
+
+
+
 
 
 
