@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import { ArrowLeft, Briefcase, CalendarDays, User } from 'lucide-react';
+import { ArrowLeft, Briefcase, CalendarDays, User, Tag } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function ExperienceDetail() {
@@ -84,6 +84,16 @@ export default function ExperienceDetail() {
               <CalendarDays size={20} className="text-violet-500 mr-3" />
               <span className="font-medium">Duration:</span>
               <span className="ml-2">{experience.duration}</span>
+            </div>
+
+            <div className="flex items-center text-gray-600">
+              <Tag size={20} className="text-violet-500 mr-3" />
+              <span className="font-medium">Experience Type:</span>
+              <span className="ml-2 px-3 py-1 rounded-full text-sm font-medium bg-violet-100 text-violet-800">
+                {experience.experienceType.split('-').map(word => 
+                  word.charAt(0).toUpperCase() + word.slice(1)
+                ).join(' ')}
+              </span>
             </div>
           </div>
 

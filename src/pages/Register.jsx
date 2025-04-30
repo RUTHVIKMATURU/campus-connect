@@ -42,16 +42,29 @@ export default function Register() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // If the year field is being changed
+    if (name === 'year') {
+      const newRole = value === '4th' ? 'senior' : 'student';
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+        role: newRole, // Automatically set role based on year
+        // Clear company field if switching to student
+        company: newRole === 'student' ? '' : prev.company
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-8">
-        <h2 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md mx-auto bg-white rounded-xl shadow-xl overflow-hidden p-8">
+        <h2 className="text-3xl font-bold text-center mb-8 text-blue-600">
           Create Account
         </h2>
 
@@ -70,7 +83,7 @@ export default function Register() {
               type="text"
               name="regNo"
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
               value={formData.regNo}
               onChange={handleChange}
               disabled={loading}
@@ -85,7 +98,7 @@ export default function Register() {
               type="text"
               name="name"
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
               value={formData.name}
               onChange={handleChange}
               disabled={loading}
@@ -100,7 +113,7 @@ export default function Register() {
               type="email"
               name="email"
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
               value={formData.email}
               onChange={handleChange}
               disabled={loading}
@@ -115,7 +128,7 @@ export default function Register() {
               type="password"
               name="password"
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
               value={formData.password}
               onChange={handleChange}
               disabled={loading}
@@ -129,7 +142,7 @@ export default function Register() {
             <select
               name="year"
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
               value={formData.year}
               onChange={handleChange}
               disabled={loading}
@@ -149,7 +162,7 @@ export default function Register() {
             <select
               name="branch"
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
               value={formData.branch}
               onChange={handleChange}
               disabled={loading}
@@ -179,7 +192,7 @@ export default function Register() {
             <select
               name="section"
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
               value={formData.section}
               onChange={handleChange}
               disabled={loading}
@@ -199,7 +212,7 @@ export default function Register() {
             <select
               name="batch"
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
               value={formData.batch}
               onChange={handleChange}
               disabled={loading}
@@ -212,24 +225,7 @@ export default function Register() {
             </select>
           </div>
 
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">
-              Role
-            </label>
-            <select
-              name="role"
-              required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent"
-              value={formData.role}
-              onChange={handleChange}
-              disabled={loading}
-            >
-              <option value="student">Student</option>
-              <option value="senior">Senior</option>
-            </select>
-          </div>
-
-          {/* Add company field that shows only when role is senior */}
+          {/* Show company field only for seniors (4th year students) */}
           {formData.role === 'senior' && (
             <div>
               <label className="block text-gray-700 font-medium mb-2">
@@ -238,8 +234,8 @@ export default function Register() {
               <input
                 type="text"
                 name="company"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent"
-                value={formData.company || ''}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                value={formData.company}
                 onChange={handleChange}
                 disabled={loading}
                 placeholder="Enter your company name"
@@ -250,7 +246,7 @@ export default function Register() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 disabled:opacity-50"
+            className="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-300 disabled:opacity-50"
           >
             {loading ? 'Creating Account...' : 'Create Account'}
           </button>
@@ -260,7 +256,7 @@ export default function Register() {
               Already have an account?{' '}
               <Link 
                 to="/login" 
-                className="text-primary-600 hover:text-primary-800 font-medium transition-colors duration-300"
+                className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-300"
               >
                 Sign In
               </Link>

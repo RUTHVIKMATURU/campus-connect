@@ -85,139 +85,148 @@ export default function GroupChat() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center p-4">
-      <div className="bg-white shadow-2xl rounded-2xl w-full max-w-5xl h-[85vh] flex flex-col">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white px-6 py-4 rounded-t-2xl flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Campus Chat</h1>
-            <p className="text-sm text-primary-100">Connected as {user.regNo}</p>
-          </div>
-        </div>
-
-        {/* Messages Container */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
-          {loading ? (
-            <div className="flex items-center justify-center h-full">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+    <div className="min-h-screen bg-gray-100">
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="bg-white shadow-2xl rounded-2xl min-h-[85vh] flex flex-col">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-primary-900 via-primary-800 to-primary-900 text-white px-8 py-6 rounded-t-2xl">
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-3xl font-bold">Campus Discussion Forum</h1>
+                <p className="text-primary-100 mt-2">Connected as {user.regNo}</p>
+              </div>
+              <div className="bg-white/10 px-4 py-2 rounded-lg">
+                <p className="text-sm">{messages.length} messages</p>
+              </div>
             </div>
-          ) : (
-            parentMessages.map((msg) => (
-              <div key={msg.id} 
-                className={`animate-fade-in ${
-                  msg.sender === user.regNo ? 'ml-auto' : ''
-                }`}
-              >
-                <div className={`max-w-[80%] ${msg.sender === user.regNo ? 'ml-auto' : ''}`}>
-                  <div className={`rounded-2xl p-4 shadow-md ${
-                    msg.sender === user.regNo 
-                      ? 'bg-gradient-to-r from-primary-600 to-secondary-600 text-white'
-                      : 'bg-gray-100'
-                  }`}>
-                    <div className="flex justify-between items-start mb-2">
-                      <span className={`font-semibold ${
-                        msg.sender === user.regNo ? 'text-primary-100' : 'text-primary-600'
+          </div>
+
+          {/* Messages Container */}
+          <div className="flex-1 overflow-y-auto px-8 py-6 space-y-8 bg-gray-50">
+            {loading ? (
+              <div className="flex items-center justify-center h-full">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+              </div>
+            ) : (
+              parentMessages.map((msg) => (
+                <div key={msg.id} className="animate-fade-in">
+                  <div className={`flex ${msg.sender === user.regNo ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-2xl ${msg.sender === user.regNo ? 'ml-auto' : ''}`}>
+                      <div className={`rounded-2xl p-6 shadow-lg ${
+                        msg.sender === user.regNo 
+                          ? 'bg-gradient-to-r from-primary-700 to-primary-800 text-white'
+                          : 'bg-white'
                       }`}>
-                        {msg.sender}
-                      </span>
-                      <span className="text-xs opacity-70">{formatTime(msg.createdAt)}</span>
-                    </div>
-                    <p className="break-words">{msg.text}</p>
-                  </div>
-
-                  <div className="mt-2 flex justify-end">
-                    <button
-                      onClick={() => setReplyTo(replyTo === msg.id ? null : msg.id)}
-                      className="flex items-center gap-1 text-sm text-primary-600 hover:text-primary-800 transition-colors"
-                    >
-                      {replyTo === msg.id ? (
-                        <>
-                          <X size={16} /> Cancel Reply
-                        </>
-                      ) : (
-                        <>
-                          <MessageSquarePlus size={16} /> Reply
-                        </>
-                      )}
-                    </button>
-                  </div>
-
-                  {/* Replies */}
-                  <div className="pl-4 mt-3 space-y-3">
-                    {getReplies(msg.id).map((reply) => (
-                      <div key={reply.id} 
-                        className={`animate-fade-in ${
-                          reply.sender === user.regNo ? 'ml-auto' : ''
-                        }`}
-                      >
-                        <div className={`rounded-xl p-3 shadow-sm max-w-[90%] ${
-                          reply.sender === user.regNo 
-                            ? 'bg-gradient-to-r from-primary-500/90 to-secondary-500/90 text-white ml-auto'
-                            : 'bg-gray-50'
-                        }`}>
-                          <div className="flex justify-between items-start mb-1">
-                            <span className={`text-sm font-medium ${
-                              reply.sender === user.regNo ? 'text-primary-100' : 'text-primary-600'
-                            }`}>
-                              {reply.sender}
-                            </span>
-                            <span className="text-xs opacity-70">{formatTime(reply.createdAt)}</span>
-                          </div>
-                          <p className="text-sm">{reply.text}</p>
+                        <div className="flex justify-between items-start mb-3">
+                          <span className={`font-semibold ${
+                            msg.sender === user.regNo ? 'text-primary-100' : 'text-primary-700'
+                          }`}>
+                            {msg.sender}
+                          </span>
+                          <span className="text-sm opacity-70">{formatTime(msg.createdAt)}</span>
                         </div>
+                        <p className="text-lg leading-relaxed">{msg.text}</p>
                       </div>
-                    ))}
 
-                    {replyTo === msg.id && (
-                      <form onSubmit={(e) => sendMessage(e, msg.id)} 
-                        className="flex gap-2 pt-2 animate-fade-in"
-                      >
-                        <input
-                          type="text"
-                          placeholder="Write a reply..."
-                          className="flex-1 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent"
-                          value={input}
-                          onChange={(e) => setInput(e.target.value)}
-                        />
+                      <div className="mt-3 flex justify-end">
                         <button
-                          type="submit"
-                          className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white p-2 rounded-full hover:shadow-lg transition-all duration-300"
+                          onClick={() => setReplyTo(replyTo === msg.id ? null : msg.id)}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                            replyTo === msg.id
+                              ? 'bg-red-100 text-red-600 hover:bg-red-200'
+                              : 'bg-gray-100 text-primary-600 hover:bg-gray-200'
+                          }`}
                         >
-                          <Send size={18} />
+                          {replyTo === msg.id ? (
+                            <>
+                              <X size={18} /> Cancel Reply
+                            </>
+                          ) : (
+                            <>
+                              <MessageSquarePlus size={18} /> Reply
+                            </>
+                          )}
                         </button>
-                      </form>
-                    )}
+                      </div>
+
+                      {/* Replies */}
+                      <div className="pl-8 mt-4 space-y-4">
+                        {getReplies(msg.id).map((reply) => (
+                          <div key={reply.id} 
+                            className={`animate-fade-in flex ${
+                              reply.sender === user.regNo ? 'justify-end' : 'justify-start'
+                            }`}
+                          >
+                            <div className={`rounded-xl p-4 shadow-md max-w-xl ${
+                              reply.sender === user.regNo 
+                                ? 'bg-gradient-to-r from-primary-600/90 to-primary-700/90 text-white ml-auto'
+                                : 'bg-white'
+                            }`}>
+                              <div className="flex justify-between items-start mb-2">
+                                <span className={`font-medium ${
+                                  reply.sender === user.regNo ? 'text-primary-100' : 'text-primary-700'
+                                }`}>
+                                  {reply.sender}
+                                </span>
+                                <span className="text-sm opacity-70">{formatTime(reply.createdAt)}</span>
+                              </div>
+                              <p className="text-base">{reply.text}</p>
+                            </div>
+                          </div>
+                        ))}
+
+                        {replyTo === msg.id && (
+                          <form onSubmit={(e) => sendMessage(e, msg.id)} 
+                            className="flex gap-3 pt-3 animate-fade-in"
+                          >
+                            <input
+                              type="text"
+                              placeholder="Write a reply..."
+                              className="flex-1 bg-white border border-gray-200 rounded-xl px-6 py-3 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+                              value={input}
+                              onChange={(e) => setInput(e.target.value)}
+                            />
+                            <button
+                              type="submit"
+                              className="bg-gradient-to-r from-primary-600 to-primary-700 text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-300"
+                            >
+                              <Send size={20} />
+                            </button>
+                          </form>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+              ))
+            )}
+            <div ref={messagesEndRef} />
+          </div>
 
-        {/* Main Message Input */}
-        {replyTo === null && (
-          <form onSubmit={(e) => sendMessage(e)} 
-            className="p-4 border-t border-gray-100 animate-fade-in"
-          >
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Type your message..."
-                className="flex-1 bg-gray-50 border border-gray-200 rounded-full px-6 py-3 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-              />
-              <button
-                type="submit"
-                className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white px-6 py-3 rounded-full hover:shadow-lg transition-all duration-300 flex items-center gap-2"
-              >
-                <Send size={18} />
-                <span>Send</span>
-              </button>
+          {/* Main Message Input */}
+          {replyTo === null && (
+            <div className="p-6 bg-white border-t border-gray-100 rounded-b-2xl">
+              <form onSubmit={(e) => sendMessage(e)} className="animate-fade-in">
+                <div className="flex gap-3">
+                  <input
+                    type="text"
+                    placeholder="Start a new discussion..."
+                    className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent text-lg"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                  />
+                  <button
+                    type="submit"
+                    className="bg-gradient-to-r from-primary-600 to-primary-700 text-white px-8 py-4 rounded-xl hover:shadow-lg transition-all duration-300 flex items-center gap-3 font-medium"
+                  >
+                    <Send size={20} />
+                    <span>Send</span>
+                  </button>
+                </div>
+              </form>
             </div>
-          </form>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

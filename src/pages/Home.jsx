@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Users, MessageSquare, Briefcase, GraduationCap, Building2, ArrowRight } from 'lucide-react';
+import { Users, MessageSquare, Briefcase, GraduationCap, Building2, ArrowRight, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 function Home() {
@@ -67,9 +67,16 @@ function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="flex justify-center"
+          className="flex justify-center gap-4"
         >
           {renderActionButton()}
+          <Link
+            to="/events"
+            className="px-8 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-300 flex items-center gap-2"
+          >
+            <Calendar size={20} />
+            Explore Events
+          </Link>
         </motion.div>
       </div>
 
@@ -109,6 +116,20 @@ function Home() {
             </div>
           </div>
 
+          {/* Events Section */}
+          <div className="bg-blue-600 rounded-lg p-8 text-white mb-16">
+            <h3 className="text-2xl font-bold mb-6">Upcoming Events</h3>
+            <p className="mb-6">Join workshops, guest lectures, and networking events to enhance your skills and expand your network.</p>
+            <Link 
+              to="/events"
+              className="inline-flex items-center gap-2 bg-white text-blue-600 px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors"
+            >
+              <Calendar size={20} />
+              View All Events
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+
           {/* Success Stories */}
           <div className="bg-blue-600 rounded-lg p-8 text-white">
             <h3 className="text-2xl font-bold mb-6">Success Stories</h3>
@@ -140,10 +161,6 @@ function Home() {
             </div>
           </div>
 
-          {/* CTA */}
-          <div className="text-center mt-12">
-            {renderActionButton()}
-          </div>
         </div>
       </div>
     </div>

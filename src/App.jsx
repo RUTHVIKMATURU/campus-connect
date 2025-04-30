@@ -16,6 +16,8 @@ import Experience from './pages/Experience';
 import ExperienceDetail from './pages/ExperienceDetail';
 import Profile from './pages/Profile';
 import { motion, AnimatePresence } from 'framer-motion';
+import Events from './pages/Events';
+import AdminEvents from './pages/AdminEvents';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -98,6 +100,13 @@ function App() {
                 user ? <Profile /> : <Navigate to="/login" replace />
               }
             />
+            <Route path="/events" element={<Events />} />
+            <Route 
+              path="/admin/events" 
+              element={
+                isAdmin ? <AdminEvents /> : <Navigate to="/admin-login" replace />
+              }
+            />
           </Routes>
         </main>
 
@@ -140,12 +149,4 @@ function App() {
 }
 
 export default App;
-
-
-
-
-
-
-
-
 

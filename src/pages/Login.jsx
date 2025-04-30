@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../utils/axiosConfig';
 
 const API_URL = 'http://localhost:5000';
 
@@ -22,6 +22,15 @@ export default function Login({ onLogin }) {
     }
   }, [navigate]);
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value.trim() // Trim whitespace
+    }));
+    setError(''); // Clear error when user types
+  };
+
   const validateForm = () => {
     if (!formData.regNo.trim()) {
       setError('Registration number is required');
@@ -34,15 +43,6 @@ export default function Login({ onLogin }) {
     return true;
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    setError(''); // Clear error when user types
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -51,18 +51,13 @@ export default function Login({ onLogin }) {
     setError('');
 
     try {
-      const response = await axios.post(`${API_URL}/api/auth/login`, formData, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      const { token, user } = response.data;
+      const response = await axiosInstance.post('/auth/login', formData);
       
-      if (token && user) {
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-        onLogin?.(user);
+      // response now contains the direct data from server
+      if (response.token && response.user) {
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user', JSON.stringify(response.user));
+        onLogin?.(response.user);
         navigate('/');
       } else {
         throw new Error('Invalid response from server');
@@ -72,7 +67,7 @@ export default function Login({ onLogin }) {
       setError(
         err.response?.data?.error || 
         err.message || 
-        'Login failed. Please try again.'
+        'Login failed. Please check your credentials and try again.'
       );
     } finally {
       setLoading(false);
@@ -80,14 +75,14 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 px-4">
       <div className="w-full max-w-md">
         <form
           onSubmit={handleSubmit}
           className="bg-white p-8 rounded-2xl shadow-2xl space-y-6 border border-gray-100"
         >
-          <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-8">
-            Welcome Back
+          <h2 className="text-3xl font-bold text-center text-blue-600 mb-8">
+            Student Login
           </h2>
 
           {error && (
@@ -106,9 +101,10 @@ export default function Login({ onLogin }) {
                 name="regNo"
                 value={formData.regNo}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all duration-300"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300"
                 placeholder="Enter your registration number"
                 disabled={loading}
+                autoComplete="username"
               />
             </div>
 
@@ -121,9 +117,10 @@ export default function Login({ onLogin }) {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all duration-300"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300"
                 placeholder="Enter your password"
                 disabled={loading}
+                autoComplete="current-password"
               />
             </div>
           </div>
@@ -131,7 +128,7 @@ export default function Login({ onLogin }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl font-medium transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 bg-blue-600 text-white rounded-xl font-medium transform hover:bg-blue-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
@@ -141,7 +138,7 @@ export default function Login({ onLogin }) {
               Don't have an account?{' '}
               <Link 
                 to="/register" 
-                className="text-primary-600 hover:text-primary-800 font-medium transition-colors duration-300"
+                className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-300"
               >
                 Create an account
               </Link>
@@ -149,7 +146,7 @@ export default function Login({ onLogin }) {
             <div className="border-t border-gray-200 pt-4">
               <Link 
                 to="/admin-login" 
-                className="text-secondary-600 hover:text-secondary-800 font-medium transition-colors duration-300"
+                className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-300"
               >
                 Admin Login
               </Link>

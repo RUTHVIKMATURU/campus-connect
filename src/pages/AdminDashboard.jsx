@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../utils/axiosConfig';
+import { Trash2, Edit, Loader } from 'lucide-react';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 const AdminDashboard = () => {
   const [students, setStudents] = useState([]);
@@ -18,22 +21,50 @@ const AdminDashboard = () => {
     role: 'student',
     status: 'pursuing'
   });
+  const [deletingStudentId, setDeletingStudentId] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [studentToDelete, setStudentToDelete] = useState(null);
 
-  // Fetch students
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check admin authentication
+    const isAdmin = localStorage.getItem('isAdmin');
+    const token = localStorage.getItem('token');
+    
+    if (!isAdmin || !token) {
+      navigate('/admin-login');
+      return;
+    }
+    
+    fetchStudents();
+  }, [navigate]);
+
+  // Fetch students with authentication
   const fetchStudents = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/students');
-      setStudents(response.data);
+      setLoading(true);
+      setError('');
+      const response = await axiosInstance.get('/students');
+      setStudents(response || []); // axiosInstance automatically returns response.data.data
       setLoading(false);
     } catch (err) {
-      setError('Failed to fetch students');
+      console.error('Error fetching students:', err);
+      setError(err.message || 'Failed to fetch students');
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchStudents();
-  }, []);
+  const handleError = (error) => {
+    console.error('Error:', error);
+    if (error.response?.status === 401) {
+      localStorage.clear();
+      navigate('/admin-login');
+      return;
+    }
+    setError(error.message || 'An error occurred');
+    setLoading(false);
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -58,46 +89,84 @@ const AdminDashboard = () => {
     setShowAddForm(false);
   };
 
+  const handleAddStudent = async (e) => {
+    e.preventDefault();
+    setMessage({ type: '', text: '' });
+
+    try {
+      const response = await axiosInstance.post('/students', formData);
+      setMessage({
+        type: 'success',
+        text: 'Student added successfully'
+      });
+      setStudents(prev => [...prev, response.data]);
+      resetForm();
+    } catch (err) {
+      setMessage({
+        type: 'error',
+        text: err.message || 'Failed to add student'
+      });
+    }
+  };
+
   const handleEditStudent = async (e) => {
     e.preventDefault();
     setMessage({ type: '', text: '' });
 
     try {
-      const response = await axios.put(
-        `http://localhost:5000/api/students/${editingStudent._id}`,
+      const response = await axiosInstance.put(
+        `/students/${editingStudent._id}`,
         formData
       );
+      
+      if (response.success) {
+        setMessage({
+          type: 'success',
+          text: 'Student updated successfully'
+        });
 
-      setMessage({
-        type: 'success',
-        text: response.data.message
-      });
-
-      // Update the students list with the edited student
-      setStudents(prevStudents =>
-        prevStudents.map(student =>
-          student._id === editingStudent._id ? response.data.student : student
-        )
-      );
-
-      resetForm();
+        // Update the students array with the new data
+        setStudents(prevStudents =>
+          prevStudents.map(student =>
+            student._id === editingStudent._id ? response.student : student
+          )
+        );
+        
+        resetForm();
+      } else {
+        throw new Error(response.message || 'Failed to update student');
+      }
     } catch (err) {
       setMessage({
         type: 'error',
-        text: err.response?.data?.message || 'Failed to update student'
+        text: err.response?.data?.message || err.message || 'Failed to update student'
       });
-      console.error('Error updating student:', err);
     }
   };
 
   const handleDeleteStudent = async (studentId) => {
-    if (window.confirm('Are you sure you want to delete this student?')) {
-      try {
-        await axios.delete(`http://localhost:5000/api/students/${studentId}`);
-        fetchStudents();
-      } catch (err) {
-        setError('Failed to delete student');
+    try {
+      setLoading(true);
+      const response = await axiosInstance.delete(`/students/${studentId}`);
+      
+      if (response.success) {
+        setStudents(prev => prev.filter(student => student._id !== studentId));
+        setMessage({
+          type: 'success',
+          text: 'Student deleted successfully'
+        });
+      } else {
+        throw new Error(response.message || 'Failed to delete student');
       }
+    } catch (err) {
+      setMessage({
+        type: 'error',
+        text: err.response?.data?.message || err.message || 'Failed to delete student'
+      });
+    } finally {
+      setLoading(false);
+      setShowDeleteModal(false);
+      setStudentToDelete(null);
     }
   };
 
@@ -121,12 +190,10 @@ const AdminDashboard = () => {
   if (error) return <div className="text-center mt-8 text-red-500">{error}</div>;
 
   return (
-    <div className="min-h-screen p-10 bg-gradient-to-tr from-sky-100 to-sky-50">
+    <div className="container mx-auto px-4 py-8">
       {message.text && (
-        <div className={`p-4 mb-4 rounded-lg ${
-          message.type === 'success' 
-            ? 'bg-green-100 text-green-700' 
-            : 'bg-red-100 text-red-700'
+        <div className={`mb-4 p-4 rounded ${
+          message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
         }`}>
           {message.text}
         </div>
@@ -264,25 +331,31 @@ const AdminDashboard = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {students.map((student) => (
-                <tr key={student._id}>
+                <tr key={student._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">{student.regNo}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{student.name}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{student.email}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{student.branch}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{student.year}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <button
-                      onClick={() => startEditing(student)}
-                      className="text-blue-600 hover:text-blue-900 mr-4"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteStudent(student._id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      Delete
-                    </button>
+                    <div className="flex items-center space-x-4">
+                      <button
+                        onClick={() => startEditing(student)}
+                        className="text-blue-600 hover:text-blue-900 transition-colors duration-200"
+                        disabled={deletingStudentId === student._id}
+                      >
+                        <Edit className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setStudentToDelete(student);
+                          setShowDeleteModal(true);
+                        }}
+                        className="text-red-600 hover:text-red-900 transition-colors duration-200"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -290,6 +363,16 @@ const AdminDashboard = () => {
           </table>
         </div>
       </div>
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setStudentToDelete(null);
+        }}
+        onConfirm={() => handleDeleteStudent(studentToDelete?._id)}
+        title="Delete Student"
+        message={`Are you sure you want to delete ${studentToDelete?.name}? This action cannot be undone.`}
+      />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-const mongoose =require('mongoose');
+const mongoose = require('mongoose');
 
 const experienceSchema = new mongoose.Schema({
   name: {
@@ -7,15 +7,34 @@ const experienceSchema = new mongoose.Schema({
   },
   company: {
     type: String,
-    required: true,
+    required: function() {
+      return ['interview', 'internship', 'placement'].includes(this.experienceType);
+    }
   },
   role: {
     type: String,
     required: true,
+    enum: [
+      'participant', 'volunteer', 'organizer',
+      'intern', 'full-time',
+      'software-intern', 'data-intern', 'design-intern', 'other-intern',
+      'software-engineer', 'data-scientist', 'product-manager', 'other'
+    ]
+  },
+  customRole: {
+    type: String,
+    required: function() {
+      return this.role === 'other' || this.role === 'other-intern';
+    }
   },
   duration: {
     type: String,
     required: true,
+  },
+  experienceType: {
+    type: String,
+    required: true,
+    enum: ['interview', 'hackathon', 'coding-contest', 'internship', 'workshop', 'placement']
   },
   experienceText: {
     type: String,
@@ -27,5 +46,5 @@ const experienceSchema = new mongoose.Schema({
   },
 });
 
-module.exports= mongoose.model('Experience', experienceSchema);
+module.exports = mongoose.model('Experience', experienceSchema);
 

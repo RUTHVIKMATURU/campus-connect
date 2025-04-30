@@ -1,27 +1,62 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { MessageSquare, LogIn, UserPlus, Shield, User } from 'lucide-react';
+import { MessageSquare, LogIn, UserPlus, Shield, User, Calendar } from 'lucide-react';
 
 export default function Navbar({ isLoggedIn, isAdmin, onLogout }) {
   const user = JSON.parse(localStorage.getItem('user') || 'null');
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
+    localStorage.clear(); // Clear all localStorage items
+    if (isAdmin) {
+      navigate('/admin-login');
+    } else {
+      navigate('/login');
+    }
+    // Call the onLogout prop to update parent state
+    if (onLogout) {
+      onLogout();
+    }
   };
 
+  const navLinkClasses = "flex items-center space-x-2 text-white hover:text-primary-200 font-medium px-3 py-2 rounded-lg hover:bg-white/10 transition-all duration-300";
+  const activeNavLinkClasses = "flex items-center space-x-2 text-white bg-white/20 font-medium px-3 py-2 rounded-lg";
+
   return (
-    <nav className="bg-gradient-to-r from-primary-900 to-secondary-800 px-6 py-4 shadow-xl">
+    <nav className="bg-gradient-to-r from-primary-900 via-primary-800 to-primary-900 px-6 py-4 shadow-xl">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <Link to="/" className="text-2xl font-bold text-white">
+        <Link to="/" className="text-2xl font-bold text-white hover:text-primary-100 transition-colors duration-300">
           Campus Connect
         </Link>
 
-        <div className="flex items-center space-x-6">
-          {user ? (
-            // Logged in user navigation
+        <div className="flex items-center space-x-2">
+          {isAdmin ? (
+            // Admin navigation
             <>
-              <Link to="/" className="text-white hover:text-primary-200">
+              <Link 
+                to="/admin/events" 
+                className={navLinkClasses}
+              >
+                <Calendar size={20} />
+                <span>Manage Events</span>
+              </Link>
+              <Link 
+                to="/admin-dashboard" 
+                className={navLinkClasses}
+              >
+                <Shield size={20} />
+                <span>Dashboard</span>
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="ml-4 px-4 py-2 bg-white/10 text-white hover:bg-white/20 rounded-lg font-medium transition-all duration-300"
+              >
+                Logout from Admin
+              </button>
+            </>
+          ) : user ? (
+            // Regular user navigation
+            <>
+              <Link to="/" className={navLinkClasses}>
                 Home
               </Link>
               
@@ -29,36 +64,44 @@ export default function Navbar({ isLoggedIn, isAdmin, onLogout }) {
                 <>
                   <Link 
                     to="/senior-messages" 
-                    className="flex items-center space-x-2 text-white hover:text-primary-200"
+                    className={navLinkClasses}
                   >
                     <MessageSquare size={20} />
                     <span>Messages from Juniors</span>
                   </Link>
                   <Link 
                     to="/experiences" 
-                    className="text-white hover:text-primary-200"
+                    className={navLinkClasses}
                   >
                     Experiences
                   </Link>
                 </>
               ) : (
                 <>
-                  <Link to="/seniors" className="text-white hover:text-primary-200">
+                  <Link to="/seniors" className={navLinkClasses}>
                     Connect with Seniors
                   </Link>
-                  <Link to="/experiences" className="text-white hover:text-primary-200">
+                  <Link to="/experiences" className={navLinkClasses}>
                     Experiences
                   </Link>
                 </>
               )}
               
-              <Link to="/group-chat" className="text-white hover:text-primary-200">
+              <Link to="/group-chat" className={navLinkClasses}>
                 Group Chat
               </Link>
 
               <Link 
+                to="/events" 
+                className={navLinkClasses}
+              >
+                <Calendar size={20} />
+                <span>Events</span>
+              </Link>
+
+              <Link 
                 to="/profile" 
-                className="flex items-center space-x-2 text-white hover:text-primary-200"
+                className={navLinkClasses}
               >
                 <User size={20} />
                 <span>{user.regNo}</span>
@@ -66,25 +109,17 @@ export default function Navbar({ isLoggedIn, isAdmin, onLogout }) {
               
               <button
                 onClick={handleLogout}
-                className="text-white hover:text-primary-200"
+                className="ml-4 px-4 py-2 bg-white/10 text-white hover:bg-white/20 rounded-lg font-medium transition-all duration-300"
               >
                 Logout
               </button>
             </>
-          ) : isAdmin ? (
-            // Admin navigation
-            <button
-              onClick={handleLogout}
-              className="text-white hover:text-primary-200"
-            >
-              Logout from Admin
-            </button>
           ) : (
             // Not logged in navigation
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-2">
               <Link 
                 to="/login" 
-                className="flex items-center space-x-2 text-white hover:text-primary-200"
+                className={navLinkClasses}
               >
                 <LogIn size={20} />
                 <span>Login</span>
@@ -92,10 +127,18 @@ export default function Navbar({ isLoggedIn, isAdmin, onLogout }) {
               
               <Link 
                 to="/register" 
-                className="flex items-center space-x-2 text-white hover:text-primary-200"
+                className={navLinkClasses}
               >
                 <UserPlus size={20} />
                 <span>Register</span>
+              </Link>
+              
+              <Link 
+                to="/admin-login" 
+                className={navLinkClasses}
+              >
+                <Shield size={20} />
+                <span>Admin</span>
               </Link>
             </div>
           )}

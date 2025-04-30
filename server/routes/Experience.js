@@ -14,10 +14,32 @@ router.post('/', async (req, res) => {
   }
 });
 
-// GET: Fetch all experiences
+// GET: Fetch all experiences with filters
 router.get('/', async (req, res) => {
   try {
-    const experiences = await Experience.find().sort({ createdAt: -1 });
+    const { experienceType, role, search } = req.query;
+    let query = {};
+
+    if (experienceType) {
+      query.experienceType = experienceType;
+    }
+
+    if (role) {
+      query.role = role;
+    }
+
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { company: { $regex: search, $options: 'i' } },
+        { experienceText: { $regex: search, $options: 'i' } },
+        { customRole: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    const experiences = await Experience.find(query)
+      .sort({ createdAt: -1 });
+      
     res.json(experiences);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching experiences', error });
