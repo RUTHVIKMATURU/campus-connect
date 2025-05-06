@@ -76,7 +76,7 @@ router.post('/', async (req, res) => {
     // Create new student document
     // IMPORTANT: We're directly using the hashedPassword to avoid double-hashing
     // The pre-save hook in the Student model would hash it again if we provided plain text
-  
+
     const newStudent = new Student({
       regNo: studentData.regNo,
       name: studentData.name,
@@ -96,7 +96,7 @@ router.post('/', async (req, res) => {
 
     try {
       await sendCredentialsEmail(studentData.email, studentData.regNo, defaultPassword);
-      
+
     } catch (emailError) {
       console.error('Failed to send email:', emailError);
     }
@@ -107,6 +107,50 @@ router.post('/', async (req, res) => {
     res.status(500).json({
       message: 'Error creating student',
       error: error.message
+    });
+  }
+});
+
+// Update student
+router.put('/:id', async (req, res) => {
+  try {
+    const studentId = req.params.id;
+    const updateData = req.body;
+
+    // Find student first to check if exists
+    const student = await Student.findById(studentId);
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student not found'
+      });
+    }
+
+    // Update the student
+    // Note: We're not allowing password updates through this route
+    const updatedStudent = await Student.findByIdAndUpdate(
+      studentId,
+      {
+        regNo: updateData.regNo,
+        name: updateData.name,
+        email: updateData.email,
+        branch: updateData.branch,
+        year: updateData.year,
+        section: updateData.section,
+        role: updateData.role || 'student',
+        status: updateData.status || 'pursuing'
+      },
+      { new: true }
+    ).select('-password');
+
+    res.json(updatedStudent);
+
+  } catch (error) {
+    console.error('Error updating student:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Error updating student'
     });
   }
 });

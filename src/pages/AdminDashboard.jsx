@@ -94,6 +94,7 @@ const AdminDashboard = () => {
   const handleAddStudent = async (e) => {
     e.preventDefault();
     setMessage({ type: '', text: '' });
+    setLoading(true);
 
     try {
       const response = await axiosInstance.post('/students', formData);
@@ -101,19 +102,23 @@ const AdminDashboard = () => {
         type: 'success',
         text: 'Student added successfully'
       });
-      setStudents(prev => [...prev, response.data]);
+      // Add the new student to the list
+      setStudents(prev => [...prev, response]);
       resetForm();
     } catch (err) {
       setMessage({
         type: 'error',
         text: err.message || 'Failed to add student'
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleEditStudent = async (e) => {
     e.preventDefault();
     setMessage({ type: '', text: '' });
+    setLoading(true);
 
     try {
       const response = await axiosInstance.put(
@@ -121,49 +126,44 @@ const AdminDashboard = () => {
         formData
       );
 
-      if (response.success) {
-        setMessage({
-          type: 'success',
-          text: 'Student updated successfully'
-        });
+      setMessage({
+        type: 'success',
+        text: 'Student updated successfully'
+      });
 
-        // Update the students array with the new data
-        setStudents(prevStudents =>
-          prevStudents.map(student =>
-            student._id === editingStudent._id ? response.student : student
-          )
-        );
+      // Update the students array with the new data
+      setStudents(prevStudents =>
+        prevStudents.map(student =>
+          student._id === editingStudent._id ? response : student
+        )
+      );
 
-        resetForm();
-      } else {
-        throw new Error(response.message || 'Failed to update student');
-      }
+      resetForm();
     } catch (err) {
       setMessage({
         type: 'error',
-        text: err.response?.data?.message || err.message || 'Failed to update student'
+        text: err.message || 'Failed to update student'
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDeleteStudent = async (studentId) => {
     try {
       setLoading(true);
-      const response = await axiosInstance.delete(`/students/${studentId}`);
+      await axiosInstance.delete(`/students/${studentId}`);
 
-      if (response.success) {
-        setStudents(prev => prev.filter(student => student._id !== studentId));
-        setMessage({
-          type: 'success',
-          text: 'Student deleted successfully'
-        });
-      } else {
-        throw new Error(response.message || 'Failed to delete student');
-      }
+      // Remove the student from the list
+      setStudents(prev => prev.filter(student => student._id !== studentId));
+      setMessage({
+        type: 'success',
+        text: 'Student deleted successfully'
+      });
     } catch (err) {
       setMessage({
         type: 'error',
-        text: err.response?.data?.message || err.message || 'Failed to delete student'
+        text: err.message || 'Failed to delete student'
       });
     } finally {
       setLoading(false);

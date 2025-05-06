@@ -34,8 +34,9 @@ export default function AdminEvents() {
     try {
       setLoading(true);
       const response = await axiosInstance.get('/events');
-      // Make sure we're accessing the correct property from the response
-      setEvents(response.data || []); // Changed from response.data.data
+      // The axios interceptor already extracts response.data
+      setEvents(response || []);
+      console.log('Fetched events:', response);
     } catch (error) {
       setError(error.message);
       console.error('Error fetching events:', error);
@@ -47,6 +48,7 @@ export default function AdminEvents() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       const formDataToSend = new FormData();
       Object.keys(formData).forEach(key => {
         if (formData[key] !== null) {
@@ -66,19 +68,26 @@ export default function AdminEvents() {
 
       setShowModal(false);
       resetForm();
-      fetchEvents();
+      await fetchEvents(); // Wait for events to be fetched
     } catch (error) {
       setError(error.message);
+      console.error('Error submitting event:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this event?')) {
       try {
+        setLoading(true);
         await axiosInstance.delete(`/events/${id}`);
-        fetchEvents();
+        await fetchEvents(); // Wait for events to be fetched
       } catch (error) {
         setError(error.message);
+        console.error('Error deleting event:', error);
+      } finally {
+        setLoading(false);
       }
     }
   };
