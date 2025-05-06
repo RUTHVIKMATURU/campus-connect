@@ -1,7 +1,5 @@
 # Campus Connect
 
-![Campus Connect Logo](https://via.placeholder.com/200x80?text=Campus+Connect)
-
 Campus Connect is a comprehensive platform designed to bridge the gap between junior and senior students in educational institutions. It facilitates mentorship, knowledge sharing, and community building through various interactive features.
 
 ## Table of Contents
