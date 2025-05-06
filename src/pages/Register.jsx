@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTheme } from '../theme/ThemeContext';
 
 export default function Register() {
+  const { isDarkMode } = useTheme();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     regNo: '',
@@ -27,11 +29,11 @@ export default function Register() {
 
     try {
       const response = await axios.post('http://localhost:5000/api/auth/register', formData);
-      
+
       // Store token and user data
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
-      
+
       navigate('/');
     } catch (error) {
       setError(error.response?.data?.error || 'Registration failed');
@@ -42,7 +44,7 @@ export default function Register() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     // If the year field is being changed
     if (name === 'year') {
       const newRole = value === '4th' ? 'senior' : 'student';
@@ -62,28 +64,28 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md mx-auto bg-white rounded-xl shadow-xl overflow-hidden p-8">
-        <h2 className="text-3xl font-bold text-center mb-8 text-blue-600">
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-xl dark:shadow-gray-900/30 overflow-hidden p-8 border border-gray-100 dark:border-gray-700 transition-all duration-300">
+        <h2 className="text-3xl font-bold text-center mb-8 text-indigo-600 dark:text-indigo-400">
           Create Account
         </h2>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg border border-red-100 dark:border-red-800/30">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-gray-700 font-medium mb-2">
+            <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
               Registration Number
             </label>
             <input
               type="text"
               name="regNo"
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-400 dark:focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-300"
               value={formData.regNo}
               onChange={handleChange}
               disabled={loading}
@@ -246,17 +248,17 @@ export default function Register() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-300 disabled:opacity-50"
+            className="w-full py-3 bg-indigo-600 dark:bg-indigo-500 text-white rounded-xl hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-300 disabled:opacity-50 shadow-md dark:shadow-indigo-900/30"
           >
             {loading ? 'Creating Account...' : 'Create Account'}
           </button>
 
           <div className="text-center mt-4">
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               Already have an account?{' '}
-              <Link 
-                to="/login" 
-                className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-300"
+              <Link
+                to="/login"
+                className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium transition-colors duration-300"
               >
                 Sign In
               </Link>

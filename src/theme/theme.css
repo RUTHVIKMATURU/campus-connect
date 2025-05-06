@@ -1,0 +1,99 @@
+/* Light theme variables */
+:root {
+  /* Primary colors */
+  --color-primary-50: #f0f4ff;
+  --color-primary-100: #e0e8ff;
+  --color-primary-200: #c7d2fe;
+  --color-primary-300: #a5b4fc;
+  --color-primary-400: #818cf8;
+  --color-primary-500: #6366f1;
+  --color-primary-600: #4f46e5;
+  --color-primary-700: #4338ca;
+  --color-primary-800: #3730a3;
+  --color-primary-900: #312e81;
+
+  /* Background colors */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f8f9fa;
+  --color-bg-tertiary: #f1f3f5;
+  --color-bg-accent: #f0f4ff;
+
+  /* Text colors */
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #4a4a4a;
+  --color-text-tertiary: #717171;
+  --color-text-accent: #6366f1;
+
+  /* Border colors */
+  --color-border-light: #e5e7eb;
+  --color-border-medium: #d1d5db;
+  --color-border-dark: #9ca3af;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Dark theme variables */
+.dark {
+  /* Primary colors - keep accent color similar */
+  --color-primary-50: #1a1c2a;
+  --color-primary-100: #222436;
+  --color-primary-200: #2a2c42;
+  --color-primary-300: #3a3d5a;
+  --color-primary-400: #4c4f6a;
+  --color-primary-500: #6366f1;
+  --color-primary-600: #7679f2;
+  --color-primary-700: #898bf3;
+  --color-primary-800: #a5a7f6;
+  --color-primary-900: #c7c8f9;
+
+  /* Background colors */
+  --color-bg-primary: #111827;
+  --color-bg-secondary: #1f2937;
+  --color-bg-tertiary: #374151;
+  --color-bg-accent: #1e1b4b;
+
+  /* Text colors */
+  --color-text-primary: #f9fafb;
+  --color-text-secondary: #f3f4f6;
+  --color-text-tertiary: #e5e7eb;
+  --color-text-accent: #818cf8;
+
+  /* Border colors */
+  --color-border-light: #374151;
+  --color-border-medium: #4b5563;
+  --color-border-dark: #6b7280;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -1px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.7), 0 4px 6px -2px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 10px 10px -5px rgba(0, 0, 0, 0.6);
+}
+
+/* Apply theme transitions */
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 5px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}

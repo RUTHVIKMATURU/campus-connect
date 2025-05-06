@@ -5,7 +5,7 @@ const { cloudinary, storage } = require('../config/cloudinary');
 const Event = require('../models/Event');
 
 // Multer configuration with Cloudinary
-const upload = multer({ 
+const upload = multer({
   storage,
   limits: {
     fileSize: 5 * 1024 * 1024 // 5MB limit
@@ -16,18 +16,18 @@ const upload = multer({
 router.post('/', (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
         message: 'Error uploading file',
-        error: err.message 
+        error: err.message
       });
     }
 
     try {
       if (!req.file) {
-        return res.status(400).json({ 
+        return res.status(400).json({
           success: false,
-          message: 'Please upload an image' 
+          message: 'Please upload an image'
         });
       }
 
@@ -40,7 +40,7 @@ router.post('/', (req, res) => {
       });
 
       await newEvent.save();
-      
+
       res.status(201).json({
         success: true,
         message: 'Event created successfully',
@@ -48,10 +48,10 @@ router.post('/', (req, res) => {
       });
     } catch (error) {
       console.error('Error creating event:', error);
-      res.status(500).json({ 
+      res.status(500).json({
         success: false,
         message: 'Error creating event',
-        error: error.message 
+        error: error.message
       });
     }
   });
@@ -60,16 +60,38 @@ router.post('/', (req, res) => {
 // Get all events
 router.get('/', async (req, res) => {
   try {
-    const events = await Event.find()
+    const { category, status, search } = req.query;
+
+    // Build filter object
+    const filter = {};
+
+    // Add category filter if provided
+    if (category) {
+      filter.category = category;
+    }
+
+    // Add status filter if provided
+    if (status) {
+      filter.status = status;
+    }
+
+    // Add search filter if provided
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    const events = await Event.find(filter)
       .sort({ date: -1 })
       .select('-__v');
-    
-    res.json({
-      data: events
-    });
+
+    // Return events directly to match the format expected by the frontend
+    res.json(events);
   } catch (error) {
     console.error('Error fetching events:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Error fetching events'
     });
   }
@@ -80,7 +102,7 @@ router.get('/:id', async (req, res) => {
   try {
     const event = await Event.findById(req.params.id)
       .select('-__v');
-    
+
     if (!event) {
       return res.status(404).json({
         success: false,
@@ -88,16 +110,14 @@ router.get('/:id', async (req, res) => {
       });
     }
 
-    res.json({
-      success: true,
-      data: event
-    });
+    // Return the event directly to match the format expected by the frontend
+    res.json(event);
   } catch (error) {
     console.error('Error fetching event:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
       message: 'Error fetching event',
-      error: error.message 
+      error: error.message
     });
   }
 });
@@ -106,10 +126,10 @@ router.get('/:id', async (req, res) => {
 router.put('/:id', (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
         message: 'Error uploading file',
-        error: err.message 
+        error: err.message
       });
     }
 

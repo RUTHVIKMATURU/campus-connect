@@ -1,26 +1,64 @@
 const express = require('express');
 const router = express.Router();
 const Student = require('../models/Student');
-const bcryptjs = require('bcryptjs');
+const bcrypt = require('bcrypt'); // Changed from bcryptjs to bcrypt for consistency
 const sendCredentialsEmail = require('../utils/emailService');
 
 // Get all students
 router.get('/', async (req, res) => {
   try {
-    console.log('Fetching students...'); // Debug log
     const students = await Student.find()
       .select('-password') // Exclude password
       .sort({ year: 1, name: 1 });
-    
-    console.log(`Found ${students.length} students`); // Debug log
-    
+
     res.json(students);
   } catch (error) {
-    console.error('Error in GET /students:', error); // Debug log
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Error fetching students', 
-      error: error.message 
+      message: 'Error fetching students',
+      error: error.message
+    });
+  }
+});
+
+// Get all seniors
+router.get('/seniors', async (req, res) => {
+  try {
+    const seniors = await Student.find({ role: 'senior' })
+      .select('-password') // Exclude password
+      .sort({ year: 1, name: 1 });
+
+    res.json(seniors);
+  } catch (error) {
+    console.error('Error in GET /students/seniors:', error); // Debug log
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching seniors',
+      error: error.message
+    });
+  }
+});
+
+// Get student by ID
+router.get('/:id', async (req, res) => {
+  try {
+    const student = await Student.findById(req.params.id)
+      .select('-password'); // Exclude password
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student not found'
+      });
+    }
+
+    res.json(student);
+  } catch (error) {
+    console.error('Error in GET /students/:id:', error); // Debug log
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching student',
+      error: error.message
     });
   }
 });
@@ -29,18 +67,21 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const studentData = req.body;
-    
+
     // Generate default password (using registration number)
     const defaultPassword = studentData.regNo;
-    const salt = await bcryptjs.genSalt(12);
-    const hashedPassword = await bcryptjs.hash(defaultPassword, salt);
+    const salt = await bcrypt.genSalt(12);
+    const hashedPassword = await bcrypt.hash(defaultPassword, salt);
 
     // Create new student document
+    // IMPORTANT: We're directly using the hashedPassword to avoid double-hashing
+    // The pre-save hook in the Student model would hash it again if we provided plain text
+  
     const newStudent = new Student({
       regNo: studentData.regNo,
       name: studentData.name,
       email: studentData.email,
-      password: hashedPassword,
+      password: hashedPassword, // Already hashed password
       branch: studentData.branch,
       year: studentData.year,
       section: studentData.section,
@@ -52,8 +93,10 @@ router.post('/', async (req, res) => {
     const studentResponse = savedStudent.toObject();
     delete studentResponse.password;
 
+
     try {
       await sendCredentialsEmail(studentData.email, studentData.regNo, defaultPassword);
+      
     } catch (emailError) {
       console.error('Failed to send email:', emailError);
     }
@@ -61,9 +104,9 @@ router.post('/', async (req, res) => {
     res.status(201).json(studentResponse);
   } catch (error) {
     console.error('Error creating student:', error);
-    res.status(500).json({ 
-      message: 'Error creating student', 
-      error: error.message 
+    res.status(500).json({
+      message: 'Error creating student',
+      error: error.message
     });
   }
 });
@@ -75,7 +118,7 @@ router.delete('/:id', async (req, res) => {
 
     // Find student first to check if exists
     const student = await Student.findById(studentId);
-    
+
     if (!student) {
       return res.status(404).json({
         success: false,

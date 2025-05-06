@@ -4,11 +4,77 @@ const ChatMessage = require('../models/Chat');
 const Student = require('../models/Student');
 const auth = require('../middleware/auth');
 
+// Get all messages for a senior
+router.get('/senior-messages/:seniorRegNo', auth, async (req, res) => {
+  try {
+    const { seniorRegNo } = req.params;
+    console.log('Fetching messages for senior:', seniorRegNo);
+
+    if (!seniorRegNo) {
+      return res.status(400).json({
+        success: false,
+        message: 'Senior registration number is required'
+      });
+    }
+
+    // First, find all unique students who have chatted with this senior
+    const uniqueStudents = await ChatMessage.distinct('sender', {
+      receiver: seniorRegNo
+    });
+
+    // Add messages where senior is the sender
+    const uniqueReceivers = await ChatMessage.distinct('receiver', {
+      sender: seniorRegNo
+    });
+
+    // Combine unique students (remove duplicates)
+    const allUniqueStudents = [...new Set([...uniqueStudents, ...uniqueReceivers])];
+
+    // Filter out the senior's own regNo
+    const studentRegNos = allUniqueStudents.filter(regNo => regNo !== seniorRegNo);
+    console.log('Found student reg numbers:', studentRegNos);
+
+    // Get student details for all chatters
+    const students = await Student.find({
+      regNo: { $in: studentRegNos }
+    }).select('name regNo branch year _id');
+    console.log('Found students:', students.length);
+
+    // Get all messages for each student
+    const conversations = await Promise.all(
+      students.map(async (student) => {
+        const messages = await ChatMessage.find({
+          $or: [
+            { sender: seniorRegNo, receiver: student.regNo },
+            { sender: student.regNo, receiver: seniorRegNo }
+          ]
+        }).sort({ createdAt: -1 });
+
+        return {
+          student,
+          messages
+        };
+      })
+    );
+
+    console.log('Returning conversations:', conversations.length);
+    res.json(conversations);
+
+  } catch (error) {
+    console.error('Error fetching senior messages:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching messages',
+      error: error.message
+    });
+  }
+});
+
 // Get chat messages
 router.get('/:chatRoomId', async (req, res) => {
   try {
     const { chatRoomId } = req.params;
-    
+
     if (!chatRoomId) {
       return res.status(400).json({
         success: false,
@@ -103,67 +169,7 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-// Get all messages for a senior
-router.get('/senior-messages/:seniorRegNo', auth, async (req, res) => {
-  try {
-    const { seniorRegNo } = req.params;
 
-    if (!seniorRegNo) {
-      return res.status(400).json({
-        success: false,
-        message: 'Senior registration number is required'
-      });
-    }
-
-    // First, find all unique students who have chatted with this senior
-    const uniqueStudents = await ChatMessage.distinct('sender', {
-      receiver: seniorRegNo
-    });
-
-    // Add messages where senior is the sender
-    const uniqueReceivers = await ChatMessage.distinct('receiver', {
-      sender: seniorRegNo
-    });
-
-    // Combine unique students (remove duplicates)
-    const allUniqueStudents = [...new Set([...uniqueStudents, ...uniqueReceivers])];
-    
-    // Filter out the senior's own regNo
-    const studentRegNos = allUniqueStudents.filter(regNo => regNo !== seniorRegNo);
-
-    // Get student details for all chatters
-    const students = await Student.find({
-      regNo: { $in: studentRegNos }
-    }).select('name regNo branch year _id');
-
-    // Get all messages for each student
-    const conversations = await Promise.all(
-      students.map(async (student) => {
-        const messages = await ChatMessage.find({
-          $or: [
-            { sender: seniorRegNo, receiver: student.regNo },
-            { sender: student.regNo, receiver: seniorRegNo }
-          ]
-        }).sort({ createdAt: -1 });
-
-        return {
-          student,
-          messages
-        };
-      })
-    );
-
-    res.json(conversations);
-
-  } catch (error) {
-    console.error('Error fetching senior messages:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching messages',
-      error: error.message
-    });
-  }
-});
 
 module.exports = router;
 

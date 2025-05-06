@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Mail, BookOpen, GraduationCap, Users, Edit2, X, Check } from 'lucide-react';
+import { User, Mail, BookOpen, GraduationCap, Users, Edit2, X, Check, Building2, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import { useTheme } from '../theme/ThemeContext';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -11,6 +12,7 @@ export default function Profile() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -48,7 +50,7 @@ export default function Profile() {
     try {
       // Get token from localStorage
       const token = localStorage.getItem('token');
-      
+
       const response = await axios.put(
         `http://localhost:5000/api/students/profile/${user._id}`,
         editedData,
@@ -72,8 +74,8 @@ export default function Profile() {
     } catch (err) {
       console.error('Profile update error:', err);
       setError(
-        err.response?.data?.message || 
-        err.message || 
+        err.response?.data?.message ||
+        err.message ||
         'Failed to update profile'
       );
     }
@@ -81,16 +83,18 @@ export default function Profile() {
 
   if (!user) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-violet-600"></div>
+      <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 dark:border-indigo-400"></div>
       </div>
     );
   }
 
   const renderField = (icon, label, value, fieldName) => {
     return (
-      <div className="flex items-center text-gray-600 border-b border-gray-200 pb-4">
-        {icon}
+      <div className="flex items-center text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 pb-4 transition-colors duration-300">
+        <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg mr-3 transition-colors duration-300">
+          {icon}
+        </div>
         <span className="font-medium w-32">{label}:</span>
         {isEditing && fieldName !== 'role' && fieldName !== 'regNo' ? (
           <input
@@ -98,50 +102,52 @@ export default function Profile() {
             name={fieldName}
             value={editedData[fieldName] || ''}
             onChange={handleChange}
-            className="flex-1 px-3 py-1 border rounded-lg focus:ring-2 focus:ring-violet-500"
+            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-400 dark:focus:ring-indigo-500 focus:border-indigo-400 dark:focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-300"
           />
         ) : (
-          <span>{value}</span>
+          <span className="font-medium">{value}</span>
         )}
       </div>
     );
   };
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50">
+    <div className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       <div className="max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-lg p-8 relative"
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-gray-900/30 p-8 relative border border-gray-100 dark:border-gray-700 transition-all duration-300"
         >
           {/* Edit Button */}
           {!isEditing && (
             <button
               onClick={handleEdit}
-              className="absolute top-4 right-4 p-2 text-violet-600 hover:bg-violet-50 rounded-full transition-colors"
+              className="absolute top-4 right-4 p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-full transition-colors duration-300"
             >
               <Edit2 size={20} />
             </button>
           )}
 
           {/* Profile Header */}
-          <div className="flex items-center justify-center mb-8">
-            <div className="w-24 h-24 bg-violet-100 rounded-full flex items-center justify-center">
-              <User size={40} className="text-violet-600" />
+          <div className="flex flex-col items-center justify-center mb-8">
+            <div className="w-28 h-28 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center mb-4 shadow-md dark:shadow-indigo-900/20 transition-colors duration-300">
+              <User size={48} className="text-indigo-600 dark:text-indigo-400" />
             </div>
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{user.name}</h2>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">{user.role === 'senior' ? 'Senior Student' : 'Student'}</p>
           </div>
 
           {/* Success Message */}
           {success && (
-            <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-lg">
+            <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-lg border border-green-100 dark:border-green-800/30 transition-colors duration-300">
               {success}
             </div>
           )}
 
           {/* Error Message */}
           {error && (
-            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg border border-red-100 dark:border-red-800/30 transition-colors duration-300">
               {error}
             </div>
           )}

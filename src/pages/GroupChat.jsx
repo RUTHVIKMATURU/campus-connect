@@ -9,6 +9,7 @@ import {
   onSnapshot,
 } from 'firebase/firestore';
 import { MessageSquarePlus, Send, X } from 'lucide-react';
+import { useTheme } from '../theme/ThemeContext';
 
 export default function GroupChat() {
   const [user, setUser] = useState({ regNo: '' });
@@ -17,6 +18,7 @@ export default function GroupChat() {
   const [replyTo, setReplyTo] = useState(null);
   const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef(null);
+  const { isDarkMode } = useTheme();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -77,35 +79,35 @@ export default function GroupChat() {
   const formatTime = (timestamp) => {
     if (!timestamp) return '';
     const date = timestamp.toDate();
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
       minute: '2-digit',
-      hour12: true 
+      hour12: true
     });
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="bg-white shadow-2xl rounded-2xl min-h-[85vh] flex flex-col">
+        <div className="bg-white dark:bg-gray-800 shadow-2xl dark:shadow-gray-900/30 rounded-2xl min-h-[85vh] flex flex-col border border-gray-100 dark:border-gray-700 transition-all duration-300">
           {/* Header */}
-          <div className="bg-gradient-to-r from-primary-900 via-primary-800 to-primary-900 text-white px-8 py-6 rounded-t-2xl">
+          <div className="bg-gradient-to-r from-indigo-800 via-indigo-700 to-indigo-800 dark:from-gray-900 dark:via-indigo-900/40 dark:to-gray-900 text-white px-8 py-6 rounded-t-2xl transition-all duration-300">
             <div className="flex justify-between items-center">
               <div>
                 <h1 className="text-3xl font-bold">Campus Discussion Forum</h1>
-                <p className="text-primary-100 mt-2">Connected as {user.regNo}</p>
+                <p className="text-indigo-200 dark:text-indigo-300 mt-2">Connected as {user.regNo}</p>
               </div>
-              <div className="bg-white/10 px-4 py-2 rounded-lg">
+              <div className="bg-white/10 dark:bg-white/5 px-4 py-2 rounded-lg border border-white/10">
                 <p className="text-sm">{messages.length} messages</p>
               </div>
             </div>
           </div>
 
           {/* Messages Container */}
-          <div className="flex-1 overflow-y-auto px-8 py-6 space-y-8 bg-gray-50">
+          <div className="flex-1 overflow-y-auto px-8 py-6 space-y-8 bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
             {loading ? (
               <div className="flex items-center justify-center h-full">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 dark:border-indigo-400"></div>
               </div>
             ) : (
               parentMessages.map((msg) => (
@@ -113,13 +115,13 @@ export default function GroupChat() {
                   <div className={`flex ${msg.sender === user.regNo ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-2xl ${msg.sender === user.regNo ? 'ml-auto' : ''}`}>
                       <div className={`rounded-2xl p-6 shadow-lg ${
-                        msg.sender === user.regNo 
-                          ? 'bg-gradient-to-r from-primary-700 to-primary-800 text-white'
-                          : 'bg-white'
-                      }`}>
+                        msg.sender === user.regNo
+                          ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 dark:from-indigo-700 dark:to-indigo-800 text-white'
+                          : 'bg-white dark:bg-gray-700 dark:text-white'
+                      } transition-all duration-300`}>
                         <div className="flex justify-between items-start mb-3">
                           <span className={`font-semibold ${
-                            msg.sender === user.regNo ? 'text-primary-100' : 'text-primary-700'
+                            msg.sender === user.regNo ? 'text-indigo-200' : 'text-indigo-600 dark:text-indigo-300'
                           }`}>
                             {msg.sender}
                           </span>
@@ -133,9 +135,9 @@ export default function GroupChat() {
                           onClick={() => setReplyTo(replyTo === msg.id ? null : msg.id)}
                           className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
                             replyTo === msg.id
-                              ? 'bg-red-100 text-red-600 hover:bg-red-200'
-                              : 'bg-gray-100 text-primary-600 hover:bg-gray-200'
-                          }`}
+                              ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50'
+                              : 'bg-gray-100 dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                          } border border-transparent dark:border-gray-600 transition-all duration-300`}
                         >
                           {replyTo === msg.id ? (
                             <>
@@ -152,19 +154,19 @@ export default function GroupChat() {
                       {/* Replies */}
                       <div className="pl-8 mt-4 space-y-4">
                         {getReplies(msg.id).map((reply) => (
-                          <div key={reply.id} 
+                          <div key={reply.id}
                             className={`animate-fade-in flex ${
                               reply.sender === user.regNo ? 'justify-end' : 'justify-start'
                             }`}
                           >
                             <div className={`rounded-xl p-4 shadow-md max-w-xl ${
-                              reply.sender === user.regNo 
-                                ? 'bg-gradient-to-r from-primary-600/90 to-primary-700/90 text-white ml-auto'
-                                : 'bg-white'
-                            }`}>
+                              reply.sender === user.regNo
+                                ? 'bg-gradient-to-r from-indigo-500/90 to-indigo-600/90 dark:from-indigo-600/90 dark:to-indigo-700/90 text-white ml-auto'
+                                : 'bg-white dark:bg-gray-700 dark:text-white'
+                            } transition-all duration-300`}>
                               <div className="flex justify-between items-start mb-2">
                                 <span className={`font-medium ${
-                                  reply.sender === user.regNo ? 'text-primary-100' : 'text-primary-700'
+                                  reply.sender === user.regNo ? 'text-indigo-200' : 'text-indigo-600 dark:text-indigo-300'
                                 }`}>
                                   {reply.sender}
                                 </span>
@@ -176,19 +178,19 @@ export default function GroupChat() {
                         ))}
 
                         {replyTo === msg.id && (
-                          <form onSubmit={(e) => sendMessage(e, msg.id)} 
+                          <form onSubmit={(e) => sendMessage(e, msg.id)}
                             className="flex gap-3 pt-3 animate-fade-in"
                           >
                             <input
                               type="text"
                               placeholder="Write a reply..."
-                              className="flex-1 bg-white border border-gray-200 rounded-xl px-6 py-3 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+                              className="flex-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-6 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:focus:ring-indigo-500 focus:border-transparent text-gray-900 dark:text-white transition-colors duration-300"
                               value={input}
                               onChange={(e) => setInput(e.target.value)}
                             />
                             <button
                               type="submit"
-                              className="bg-gradient-to-r from-primary-600 to-primary-700 text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-300"
+                              className="bg-gradient-to-r from-indigo-600 to-indigo-700 dark:from-indigo-700 dark:to-indigo-800 text-white px-6 py-3 rounded-xl hover:shadow-lg dark:shadow-indigo-900/30 transition-all duration-300"
                             >
                               <Send size={20} />
                             </button>
@@ -205,19 +207,19 @@ export default function GroupChat() {
 
           {/* Main Message Input */}
           {replyTo === null && (
-            <div className="p-6 bg-white border-t border-gray-100 rounded-b-2xl">
+            <div className="p-6 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 rounded-b-2xl transition-colors duration-300">
               <form onSubmit={(e) => sendMessage(e)} className="animate-fade-in">
                 <div className="flex gap-3">
                   <input
                     type="text"
                     placeholder="Start a new discussion..."
-                    className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent text-lg"
+                    className="flex-1 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:focus:ring-indigo-500 focus:border-transparent text-lg text-gray-900 dark:text-white transition-colors duration-300"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                   />
                   <button
                     type="submit"
-                    className="bg-gradient-to-r from-primary-600 to-primary-700 text-white px-8 py-4 rounded-xl hover:shadow-lg transition-all duration-300 flex items-center gap-3 font-medium"
+                    className="bg-gradient-to-r from-indigo-600 to-indigo-700 dark:from-indigo-700 dark:to-indigo-800 text-white px-8 py-4 rounded-xl hover:shadow-lg dark:shadow-indigo-900/30 transition-all duration-300 flex items-center gap-3 font-medium"
                   >
                     <Send size={20} />
                     <span>Send</span>

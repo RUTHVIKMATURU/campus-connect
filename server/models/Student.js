@@ -53,10 +53,15 @@ const studentSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Only hash the password if it's been modified
+// IMPORTANT: We're disabling the automatic password hashing in the pre-save hook
+// because we're now handling the hashing directly in the routes
+// This prevents double-hashing which can cause login issues
+
+// For reference, here's the original pre-save hook:
+/*
 studentSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
-  
+
   try {
     const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);
@@ -64,6 +69,16 @@ studentSchema.pre('save', async function(next) {
   } catch (error) {
     next(error);
   }
+});
+*/
+
+// Instead, we'll just log the password length to help with debugging
+studentSchema.pre('save', function(next) {
+  if (this.isModified('password')) {
+    console.log('Student model pre-save hook - password length:', this.password.length);
+    console.log('Password starts with:', this.password.substring(0, 10) + '...');
+  }
+  next();
 });
 
 module.exports = mongoose.model('Student', studentSchema);
