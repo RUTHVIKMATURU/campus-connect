@@ -70,15 +70,6 @@ Campus Connect is a comprehensive platform designed to bridge the gap between ju
    npm install
    ```
 
-3. Create a `.env` file in the server directory with the following variables:
-   ```
-   PORT=5000
-   MONGODB_URI=mongodb://localhost:27017/campus-connect
-   JWT_SECRET=your_jwt_secret
-   EMAIL_SERVICE=your_email_service
-   EMAIL_USER=your_email
-   EMAIL_PASS=your_email_password
-   ```
 
 ### Running the Application
 
