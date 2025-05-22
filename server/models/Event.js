@@ -23,6 +23,16 @@ const eventSchema = new mongoose.Schema({
   imageUrl: {
     type: String,
     required: [true, 'Image URL is required']
+  },
+  category: {
+    type: String,
+    enum: ['fun', 'workshop', 'guest-lecture', 'hackathon', 'coding-contest'],
+    default: 'workshop'
+  },
+  status: {
+    type: String,
+    enum: ['upcoming', 'ongoing', 'past'],
+    default: 'upcoming'
   }
 }, {
   timestamps: true

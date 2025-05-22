@@ -111,6 +111,17 @@ export default function Profile() {
     );
   };
 
+  if (!user) {
+    return (
+      <div className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 flex items-center justify-center">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-gray-900/30 p-8 text-center border border-gray-100 dark:border-gray-700 transition-all duration-300">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 dark:border-indigo-400 mx-auto mb-4"></div>
+          <p className="text-gray-700 dark:text-gray-300">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       <div className="max-w-4xl mx-auto">

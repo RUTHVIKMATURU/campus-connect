@@ -37,8 +37,9 @@ export default function Events() {
   };
 
   useEffect(() => {
+    console.log('Filters changed:', filters);
     fetchEvents();
-  }, [filters]);
+  }, [filters.category, filters.status, filters.search]);
 
   const fetchEvents = async () => {
     try {
@@ -54,20 +55,26 @@ export default function Events() {
       // Convert to URLSearchParams
       const params = new URLSearchParams(queryParams);
 
+      console.log('Fetching events with params:', Object.fromEntries(params));
+
       // Fetch events from the server
       const response = await axiosInstance.get(`/events?${params}`);
+
+      console.log('Received events:', response);
 
       // Format the events with default values if needed
       const formattedEvents = Array.isArray(response) ? response.map(event => ({
         ...event,
         time: event.time || { start: 'N/A', end: 'N/A' },
         status: event.status || 'upcoming',
+        category: event.category || 'workshop',
         registrationCount: event.registrationCount || 0,
         cost: event.cost || 0,
         venue: event.venue || 'TBA',
         imageUrl: event.imageUrl || 'https://via.placeholder.com/400x200'
       })) : [];
 
+      console.log('Formatted events:', formattedEvents.length);
       setEvents(formattedEvents);
     } catch (error) {
       setError('Failed to load events. Please try again later.');
@@ -111,7 +118,7 @@ export default function Events() {
             onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
             className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-400 dark:focus:ring-indigo-500 focus:border-indigo-400 dark:focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-300 shadow-sm"
           >
-            <option value="">All Categories</option>
+            <option value="" selected disabled>Select Category</option>
             {categories.map(cat => (
               <option key={cat.value} value={cat.value}>{cat.label}</option>
             ))}
@@ -124,7 +131,7 @@ export default function Events() {
             onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
             className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-400 dark:focus:ring-indigo-500 focus:border-indigo-400 dark:focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-300 shadow-sm"
           >
-            <option value="">All Statuses</option>
+            <option value="">Status</option>
             {statuses.map(status => (
               <option key={status.value} value={status.value}>{status.label}</option>
             ))}

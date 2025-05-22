@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const ChatMessage = require('../models/Chat');
+const GroupChatMessage = require('../models/GroupChat');
 const Student = require('../models/Student');
 const auth = require('../middleware/auth');
 
@@ -169,11 +170,92 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
+// Group Chat Routes
 
+// Get all group chat messages
+router.get('/group/messages', auth, async (req, res) => {
+  try {
+    // Get the most recent messages, limited to 50 by default
+    const limit = parseInt(req.query.limit) || 50;
+
+    const messages = await GroupChatMessage.find({})
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .lean();
+
+    // Return in reverse order so newest are at the bottom
+    res.json(messages.reverse());
+  } catch (error) {
+    console.error('Error fetching group messages:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching group messages',
+      error: error.message
+    });
+  }
+});
+
+// Send a group chat message
+router.post('/group/message', auth, async (req, res) => {
+  try {
+    const { sender, text, parentId } = req.body;
+
+    // Validate input
+    if (!sender || !text?.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields'
+      });
+    }
+
+    // Verify sender exists
+    const senderUser = await Student.findOne({ regNo: sender });
+
+    if (!senderUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'Sender not found'
+      });
+    }
+
+    // Create message object
+    const messageData = {
+      sender,
+      text: text.trim(),
+    };
+
+    // Add parentId if it exists (for replies)
+    if (parentId) {
+      // Verify parent message exists
+      const parentMessage = await GroupChatMessage.findById(parentId);
+      if (!parentMessage) {
+        return res.status(404).json({
+          success: false,
+          message: 'Parent message not found'
+        });
+      }
+      messageData.parentId = parentId;
+    }
+
+    // Create and save message
+    const newMessage = new GroupChatMessage(messageData);
+    await newMessage.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Message sent successfully',
+      data: newMessage
+    });
+
+  } catch (error) {
+    console.error('Send group message error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error sending message',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
 
 module.exports = router;
-
-
-
-
 

@@ -15,7 +15,8 @@ export default function AdminEvents() {
     description: '',
     date: '',
     venue: '',
-    image: null
+    image: null,
+    category: 'workshop'
   });
 
   const navigate = useNavigate();
@@ -98,7 +99,8 @@ export default function AdminEvents() {
       description: '',
       date: '',
       venue: '',
-      image: null
+      image: null,
+      category: 'workshop'
     });
     setEditingEvent(null);
   };
@@ -110,7 +112,8 @@ export default function AdminEvents() {
       description: event.description,
       date: new Date(event.date).toISOString().split('T')[0],
       venue: event.venue,
-      image: null
+      image: null,
+      category: event.category || 'workshop'
     });
     setShowModal(true);
   };
@@ -159,8 +162,8 @@ export default function AdminEvents() {
 
       {/* Event Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex items-center justify-center p-4 backdrop-blur-sm transition-all duration-300 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-md p-6 shadow-xl dark:shadow-gray-900/50 border border-gray-100 dark:border-gray-700 transition-all duration-300">
+        <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex items-center justify-center p-4 backdrop-blur-sm transition-all duration-300 z-50 overflow-y-auto">
+          <div className="relative bg-white dark:bg-gray-800 rounded-xl w-full max-w-md mx-auto my-8 p-6 shadow-xl dark:shadow-gray-900/50 border border-gray-100 dark:border-gray-700 transition-all duration-300">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                 {editingEvent ? 'Edit Event' : 'Add New Event'}
@@ -176,7 +179,7 @@ export default function AdminEvents() {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5 max-h-[70vh] overflow-y-auto pr-2">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title</label>
                 <input
@@ -208,6 +211,9 @@ export default function AdminEvents() {
                   className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus:ring-2 focus:ring-indigo-400 dark:focus:ring-indigo-500 focus:border-indigo-400 dark:focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2.5 transition-colors duration-300"
                   required
                 />
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Event status (upcoming, ongoing, or past) will be automatically determined based on this date.
+                </p>
               </div>
 
               <div>
@@ -220,6 +226,24 @@ export default function AdminEvents() {
                   required
                 />
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
+                <select
+                  value={formData.category}
+                  onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                  className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus:ring-2 focus:ring-indigo-400 dark:focus:ring-indigo-500 focus:border-indigo-400 dark:focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2.5 transition-colors duration-300"
+                  required
+                >
+                  <option value="workshop">Workshop</option>
+                  <option value="fun">Fun Event</option>
+                  <option value="guest-lecture">Guest Lecture</option>
+                  <option value="hackathon">Hackathon</option>
+                  <option value="coding-contest">Coding Contest</option>
+                </select>
+              </div>
+
+
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Image</label>
@@ -279,9 +303,18 @@ export default function AdminEvents() {
                 <div>
                   <h3 className="font-semibold text-lg text-gray-900 dark:text-white">{event.title}</h3>
                   <p className="text-gray-600 dark:text-gray-400">{event.venue}</p>
-                  <p className="text-gray-500 dark:text-gray-500 text-sm">
-                    {new Date(event.date).toLocaleDateString()}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-gray-500 dark:text-gray-500 text-sm">
+                      {new Date(event.date).toLocaleDateString()}
+                    </p>
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                      event.status === 'upcoming' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' :
+                      event.status === 'ongoing' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' :
+                      'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+                    }`}>
+                      {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+                    </span>
+                  </div>
                 </div>
               </div>
               <div className="flex gap-2">

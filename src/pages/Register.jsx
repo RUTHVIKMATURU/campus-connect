@@ -16,8 +16,7 @@ export default function Register() {
     section: '',
     status: 'pursuing',
     batch: '',
-    role: 'student',
-    company: ''
+    role: 'student'
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -30,7 +29,6 @@ export default function Register() {
     try {
       const response = await axios.post('http://localhost:5000/api/auth/register', formData);
 
-      // Store token and user data
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
 
@@ -45,15 +43,12 @@ export default function Register() {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // If the year field is being changed
     if (name === 'year') {
       const newRole = value === '4th' ? 'senior' : 'student';
       setFormData(prev => ({
         ...prev,
         [name]: value,
-        role: newRole, // Automatically set role based on year
-        // Clear company field if switching to student
-        company: newRole === 'student' ? '' : prev.company
+        role: newRole
       }));
     } else {
       setFormData(prev => ({
@@ -64,7 +59,7 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-xl dark:shadow-gray-900/30 overflow-hidden p-8 border border-gray-100 dark:border-gray-700 transition-all duration-300">
         <h2 className="text-3xl font-bold text-center mb-8 text-indigo-600 dark:text-indigo-400">
           Create Account
@@ -93,14 +88,14 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium mb-2">
+            <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
               Full Name
             </label>
             <input
               type="text"
               name="name"
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-400 dark:focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-300"
               value={formData.name}
               onChange={handleChange}
               disabled={loading}
@@ -108,14 +103,14 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium mb-2">
+            <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
               Email
             </label>
             <input
               type="email"
               name="email"
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-400 dark:focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-300"
               value={formData.email}
               onChange={handleChange}
               disabled={loading}
@@ -123,14 +118,14 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium mb-2">
+            <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
               Password
             </label>
             <input
               type="password"
               name="password"
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-400 dark:focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-300"
               value={formData.password}
               onChange={handleChange}
               disabled={loading}
@@ -138,13 +133,13 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium mb-2">
+            <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
               Year
             </label>
             <select
               name="year"
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-400 dark:focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-300"
               value={formData.year}
               onChange={handleChange}
               disabled={loading}
@@ -158,13 +153,13 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium mb-2">
+            <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
               Branch
             </label>
             <select
               name="branch"
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-400 dark:focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-300"
               value={formData.branch}
               onChange={handleChange}
               disabled={loading}
@@ -188,13 +183,13 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium mb-2">
+            <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
               Section
             </label>
             <select
               name="section"
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-400 dark:focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-300"
               value={formData.section}
               onChange={handleChange}
               disabled={loading}
@@ -208,13 +203,13 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium mb-2">
+            <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
               Batch
             </label>
             <select
               name="batch"
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-400 dark:focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-300"
               value={formData.batch}
               onChange={handleChange}
               disabled={loading}
@@ -227,23 +222,7 @@ export default function Register() {
             </select>
           </div>
 
-          {/* Show company field only for seniors (4th year students) */}
-          {formData.role === 'senior' && (
-            <div>
-              <label className="block text-gray-700 font-medium mb-2">
-                Company
-              </label>
-              <input
-                type="text"
-                name="company"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                value={formData.company}
-                onChange={handleChange}
-                disabled={loading}
-                placeholder="Enter your company name"
-              />
-            </div>
-          )}
+
 
           <button
             type="submit"

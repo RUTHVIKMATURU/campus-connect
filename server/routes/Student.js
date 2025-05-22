@@ -191,6 +191,52 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// Update student profile
+router.put('/profile/:id', async (req, res) => {
+  try {
+    const studentId = req.params.id;
+    const updateData = req.body;
+
+    // Find student first to check if exists
+    const student = await Student.findById(studentId);
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student not found'
+      });
+    }
+
+    // Update the student
+    const updatedStudent = await Student.findByIdAndUpdate(
+      studentId,
+      {
+        name: updateData.name,
+        email: updateData.email,
+        branch: updateData.branch,
+        year: updateData.year,
+        section: updateData.section,
+        role: updateData.role || student.role,
+        status: updateData.status || student.status
+      },
+      { new: true }
+    ).select('-password');
+
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      student: updatedStudent
+    });
+
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Error updating profile'
+    });
+  }
+});
+
 module.exports = router;
 
 

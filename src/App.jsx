@@ -132,7 +132,7 @@ function App() {
           {/* Chatbot Button and Modal */}
           <button
             onClick={() => setShowChat(!showChat)}
-            className="fixed bottom-6 right-6 bg-primary-600 hover:bg-primary-700 text-white p-3 rounded-full shadow-lg dark:shadow-soft-dark z-50 transition-all"
+            className="fixed bottom-6 right-6 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-700 dark:hover:bg-indigo-800 text-white p-3 rounded-full shadow-lg dark:shadow-gray-900/50 z-50 transition-all"
             title="Chat with Gemini"
           >
             <Bot size={24} />
@@ -146,12 +146,12 @@ function App() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.5, y: 50 }}
                 transition={{ duration: 0.3 }}
-                className="fixed bottom-20 right-6 w-[26rem] h-[32rem] bg-white dark:bg-dark-lighter rounded-2xl shadow-2xl dark:shadow-soft-dark z-40 flex flex-col overflow-hidden border border-gray-200 dark:border-gray-700"
+                className="fixed bottom-20 right-6 w-[90vw] md:w-[32rem] lg:w-[36rem] h-[32rem] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl dark:shadow-gray-900/30 z-40 flex flex-col overflow-hidden border border-gray-200 dark:border-gray-700 transition-colors duration-300"
               >
-                <div className="flex justify-end items-center p-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-dark-light">
+                <div className="flex justify-end items-center p-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
                   <button
                     onClick={() => setShowChat(false)}
-                    className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-sm font-semibold"
+                    className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-sm font-semibold transition-colors duration-300"
                   >
                     ✕
                   </button>

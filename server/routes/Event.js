@@ -31,12 +31,29 @@ router.post('/', (req, res) => {
         });
       }
 
+      // Determine status based on date
+      const eventDate = new Date(req.body.date);
+      const now = new Date();
+      const oneDayLater = new Date(now);
+      oneDayLater.setDate(oneDayLater.getDate() + 1);
+
+      let status;
+      if (eventDate < now) {
+        status = 'past';
+      } else if (eventDate >= now && eventDate < oneDayLater) {
+        status = 'ongoing';
+      } else {
+        status = 'upcoming';
+      }
+
       const newEvent = new Event({
         title: req.body.title,
         description: req.body.description,
-        date: new Date(req.body.date),
+        date: eventDate,
         venue: req.body.venue,
-        imageUrl: req.file.path
+        imageUrl: req.file.path,
+        category: req.body.category || 'workshop',
+        status: status
       });
 
       await newEvent.save();
@@ -57,9 +74,60 @@ router.post('/', (req, res) => {
   });
 });
 
+// Helper function to update event status and category
+const updateEventStatus = async () => {
+  try {
+    const now = new Date();
+
+    // First, ensure all events have status and category fields
+    await Event.updateMany(
+      { status: { $exists: false } },
+      { $set: { status: 'upcoming' } }
+    );
+
+    await Event.updateMany(
+      { category: { $exists: false } },
+      { $set: { category: 'workshop' } }
+    );
+
+    // Set past events
+    const pastResult = await Event.updateMany(
+      { date: { $lt: now }, status: { $ne: 'past' } },
+      { $set: { status: 'past' } }
+    );
+
+    // Set ongoing events (assuming events last for 24 hours)
+    const oneDayLater = new Date(now);
+    oneDayLater.setDate(oneDayLater.getDate() + 1);
+
+    const ongoingResult = await Event.updateMany(
+      {
+        date: { $gte: now, $lt: oneDayLater },
+        status: { $ne: 'ongoing' }
+      },
+      { $set: { status: 'ongoing' } }
+    );
+
+    // Set upcoming events
+    const upcomingResult = await Event.updateMany(
+      {
+        date: { $gte: oneDayLater },
+        status: { $ne: 'upcoming' }
+      },
+      { $set: { status: 'upcoming' } }
+    );
+
+  } catch (error) {
+    console.error('Error updating event statuses:', error);
+  }
+};
+
 // Get all events
 router.get('/', async (req, res) => {
   try {
+    // Update event statuses automatically
+    await updateEventStatus();
+
     const { category, status, search } = req.query;
 
     // Build filter object
@@ -100,6 +168,9 @@ router.get('/', async (req, res) => {
 // Get single event
 router.get('/:id', async (req, res) => {
   try {
+    // Update event statuses automatically
+    await updateEventStatus();
+
     const event = await Event.findById(req.params.id)
       .select('-__v');
 
@@ -135,11 +206,28 @@ router.put('/:id', (req, res) => {
 
     try {
       const eventId = req.params.id;
+      // Determine status based on date
+      const eventDate = new Date(req.body.date);
+      const now = new Date();
+      const oneDayLater = new Date(now);
+      oneDayLater.setDate(oneDayLater.getDate() + 1);
+
+      let status;
+      if (eventDate < now) {
+        status = 'past';
+      } else if (eventDate >= now && eventDate < oneDayLater) {
+        status = 'ongoing';
+      } else {
+        status = 'upcoming';
+      }
+
       const updateData = {
         title: req.body.title,
         description: req.body.description,
-        date: new Date(req.body.date),
+        date: eventDate,
         venue: req.body.venue,
+        category: req.body.category || 'workshop',
+        status: status
       };
 
       // Only update image if a new one is uploaded
